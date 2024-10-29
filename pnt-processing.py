@@ -1,4 +1,9 @@
 import json
+import gdown
+
+url = "https://drive.google.com/drive/folders/14JhgYP0CjMcpSoVVJVaN_-6Ww3IUfzIu?usp=sharing"
+output = "Data/"
+gdown.download_folder(url, output=output)
 
 #Open Json file:
 with open('GooseCount1.pnt', 'r') as f:
