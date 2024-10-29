@@ -25,9 +25,9 @@ export default function ImageTable(props) {
                 <Table>
                     <TableHead>
                         <TableRow>
-                            <TableCell>Image</TableCell>
-                            <TableCell>Park</TableCell>
-                            <TableCell>Count</TableCell>
+                            <TableCell style={{ width: '33%', textAlign: 'left' }}>Image</TableCell>
+                            <TableCell style={{ width: '33%', textAlign: 'left' }}>Park</TableCell>
+                            <TableCell style={{ width: '33%', textAlign: 'left' }}>Count</TableCell>
                         </TableRow>
                     </TableHead>
                     <TableBody>

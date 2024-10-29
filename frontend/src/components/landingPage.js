@@ -29,13 +29,15 @@ export default function LandingPage() {
 
           {/* Right Column: Button */}
           <Grid size={3}>
-          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <Button variant="contained" onClick={addEntry} fullWidth sx={{ height: '16vh', fontSize: '2rem', marginBottom: '20px' }}>
-                Add Entry
-              </Button>
-              <Button variant="contained" fullWidth color='success' sx={{ height: '16vh', fontSize: '2rem', marginBottom: '20px' }}>
-                Count
-              </Button>
+            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <Box>
+                <Button variant="contained" onClick={addEntry} fullWidth sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}>
+                  Add Entry
+                </Button>
+                <Button variant="contained" fullWidth color='success' sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}>
+                  Count
+                </Button>
+              </Box>
               
               <TotalTable />
             </Box>
