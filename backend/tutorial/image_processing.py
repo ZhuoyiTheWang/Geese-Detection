@@ -6,7 +6,7 @@ import cv2   # If this throws an error run pip install opencv-python in your ter
 
 
 # READ IMAGE
-goose_image = cv2.imread("tutorial/1.jpg")
+goose_image = cv2.imread("backend/tutorial/1.jpg")
 
 # SHOW IMAGE
 cv2.imshow("window name", goose_image)
