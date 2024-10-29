@@ -2,7 +2,7 @@ import { Card, Typography, Table, TableBody, TableCell, TableContainer, TableHea
 
 export default function TotalTable(props) {
     return (
-        <Card sx={{ padding: '20px', border: '5px solid black' }}>
+        <Card sx={{ padding: '20px', border: '5px solid black', height: '100%' }}>
         <Typography variant="h6" component="div" gutterBottom>
           Total Counts
         </Typography>
@@ -18,6 +18,18 @@ export default function TotalTable(props) {
             <TableRow>
                 <TableCell>Adam</TableCell>
                 <TableCell>500</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Albert</TableCell>
+                <TableCell>1000</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Alex</TableCell>
+                <TableCell>700</TableCell>
+              </TableRow>
+              <TableRow>
+                <TableCell>Alfred</TableCell>
+                <TableCell>200</TableCell>
               </TableRow>
             </TableBody>
           </Table>

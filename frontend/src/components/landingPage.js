@@ -19,27 +19,29 @@ export default function LandingPage() {
 
   return (
     <div>
-      <TitleComponent />
-      <Grid container spacing={2} sx={{ margin: '20px', marginTop: '20px' }}>
-        {/* Left Column: Table inside the Card */}
-        <Grid size={9}>
-          <ImageTable entries={entries} counts={counts}/>
-        </Grid>
+      <Box sx={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+        <TitleComponent />
+        <Grid container spacing={2} sx={{ margin: '20px', marginTop: '20px', height: '100%'}}>
+          {/* Left Column: Table inside the Card */}
+          <Grid size={9}>
+            <ImageTable entries={entries} counts={counts}/>
+          </Grid>
 
-        {/* Right Column: Button */}
-        <Grid size={3}>
-        <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Button variant="contained" onClick={addEntry} fullWidth sx={{ height: '16vh', fontSize: '2rem', marginBottom: '20px' }}>
-              Add Entry
-            </Button>
-            <Button variant="contained" fullWidth color='success' sx={{ height: '16vh', fontSize: '2rem', marginBottom: '20px' }}>
-              Count
-            </Button>
-            
-            <TotalTable />
-          </Box>
+          {/* Right Column: Button */}
+          <Grid size={3}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+              <Button variant="contained" onClick={addEntry} fullWidth sx={{ height: '16vh', fontSize: '2rem', marginBottom: '20px' }}>
+                Add Entry
+              </Button>
+              <Button variant="contained" fullWidth color='success' sx={{ height: '16vh', fontSize: '2rem', marginBottom: '20px' }}>
+                Count
+              </Button>
+              
+              <TotalTable />
+            </Box>
+          </Grid>
         </Grid>
-      </Grid>
+      </Box>
     </div>
   );
 }
