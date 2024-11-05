@@ -11,6 +11,8 @@ def download_from_gdrive() -> None:
     output = "Data/gdrive" #folder where data is being stored
     gdown.download_folder(url, output=output) #download files
 
+    print("Folder downloaded from google drive into Data/gdrive")
+
 def download_goose_mugshots() -> None:
     """Checks out the git with all of the goose mugshots. Data can be found at Data/goose-dataset/{images/annotations}."""
 
@@ -33,4 +35,5 @@ def download_goose_mugshots() -> None:
 if __name__ == "__main__":
 
     # git download
+    download_from_gdrive()
     download_goose_mugshots()

@@ -2,6 +2,10 @@
 import xmltodict
 import os
 import glob
+import data_download
+
+# make sure data is downloaded
+data_download.download_goose_mugshots()
 
 #Make folder directory for storing images and labels:
 os.makedirs("datasets/images/train", exist_ok=True)
