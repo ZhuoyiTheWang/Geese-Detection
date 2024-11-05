@@ -1,7 +1,7 @@
 path : .
 train: images/train
 val: images/validation
-test: #optional
+test: images/test
 
 names:
   0 : GOOSE
