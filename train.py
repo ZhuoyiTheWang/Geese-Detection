@@ -2,12 +2,12 @@
 
 from ultralytics import YOLO
 
-model = YOLO("yolov8m.pt") #select model
+model = YOLO("yolov8s.pt") #select model
 
 #train the model
 model.train(
     data = "goose.yaml",
-    epochs = 20,
+    epochs = 100,
+    patience = 20,
     imgsz = (800,533), #w,h
-    batch = 4,
 )
