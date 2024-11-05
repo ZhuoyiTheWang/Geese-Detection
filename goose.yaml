@@ -1,0 +1,7 @@
+path : .
+train: images/train
+val: images/validation
+test: #optional
+
+names:
+  0 : GOOSE
