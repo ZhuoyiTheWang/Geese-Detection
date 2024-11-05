@@ -33,9 +33,9 @@ export default function ImageTable(props) {
                     <TableBody>
                         {rowsToDisplay.map((entry, index) => (
                             <TableRow key={index}>
-                                <TableCell sx={{ color: 'blue', textDecoration: 'underline' }}>{index + 1}.png</TableCell>
+                                <TableCell sx={{ color: 'blue', textDecoration: 'underline' }}>{entry}</TableCell>
                                 <TableCell>Adam</TableCell>
-                                <TableCell>{index * 10}</TableCell>
+                                <TableCell>{props.counts[index] ?? 0}</TableCell>
                             </TableRow>
                         ))}
                         {emptyRows > 0 && Array.from(Array(emptyRows)).map((_, idx) => (

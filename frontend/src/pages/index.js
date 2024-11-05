@@ -7,11 +7,12 @@ export default function Home() {
 
   return (
     <>
-      {isAuthenticated ? (
+    <LandingPage />
+      {/* {isAuthenticated ? (
         <LandingPage />
       ) : (
         <LoginPage setIsAuthenticated={setIsAuthenticated} />
-      )}
+      )} */}
     </>
   );
 }
