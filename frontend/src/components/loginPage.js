@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
 import { TextField, Button, Typography, Box } from '@mui/material';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function LoginPage({ setIsAuthenticated }) {
   const [password, setPassword] = useState('');
 
   const handleLogin = () => {
-    const correctPassword = 'Goose'; // Replace with your desired password
+    const correctPassword = 'goose';
 
     if (password === correctPassword) {
       setIsAuthenticated(true); // Update authentication state
     } else {
-      alert('Incorrect Password');
+      toast.error('Incorrect Password'); // Display Toastify error
     }
   };
 
@@ -45,6 +47,7 @@ export default function LoginPage({ setIsAuthenticated }) {
       >
         Sign In
       </Button>
+      <ToastContainer position="top-right" autoClose={3000} />
     </Box>
   );
 }
