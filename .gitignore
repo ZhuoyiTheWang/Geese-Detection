@@ -5,3 +5,5 @@ Data/
 *.xml
 datasets/
 *.pt
+__pycache__/
+runs/
