@@ -30,9 +30,9 @@ for i, xml_file in enumerate(glob.glob("Data/goose-dataset/annotations/*.xml")):
     bbox_w_n = (xmax - xmin) / w #calculate normalized bounding box width
     bbox_h_n = (ymax - ymin) / h #calculate normalized bounding box height
 
-    if i <= 800: #first 80% used for training
+    if i < 800: #first 80% used for training
         split = "train"
-    elif i <= 900: #next 10% used for validation
+    elif i < 900: #next 10% used for validation
         split = "validation"
     else: #last 10% used for testing
         split = "test"

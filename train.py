@@ -10,4 +10,5 @@ model.train(
     epochs = 100,
     patience = 20,
     imgsz = (800,533), #w,h
+    device = 0
 )

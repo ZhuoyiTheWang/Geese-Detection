@@ -35,5 +35,5 @@ def download_goose_mugshots() -> None:
 if __name__ == "__main__":
 
     # git download
-    download_from_gdrive()
+    # download_from_gdrive()
     download_goose_mugshots()
