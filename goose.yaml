@@ -1,6 +1,6 @@
-path : .
+path : ./Data/fully-labeled-goose-dataset
 train: images/train
-val: images/validation
+val: images/valid
 test: images/test
 
 names:
