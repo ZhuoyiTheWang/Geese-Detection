@@ -5,6 +5,7 @@ import gdown
 from git import repo
 import os
 import requests
+from zipfile import ZipFile
 
 def download_from_gdrive() -> None:
     """Downloads all data from the google drive into the Data folder"""
@@ -50,7 +51,6 @@ def download_lionhead_goose() -> None:
             print("Dataset downloaded to Data/lionhead_data")
     else:
         print('Failed to download file.')
-    
     
 
 
