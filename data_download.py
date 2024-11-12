@@ -57,6 +57,6 @@ def download_lionhead_goose() -> None:
 if __name__ == "__main__":
 
     # git download
-    download_from_gdrive()
+    # download_from_gdrive()
     download_goose_mugshots()
     download_lionhead_goose()
