@@ -4,6 +4,7 @@ import Grid from '@mui/material/Grid2';
 import TitleComponent from './title';
 import ImageTable from './imageTable';
 import TotalTable from './totalTable';
+import axios from 'axios';
 
 export default function LandingPage() {
   const [entries, setEntries] = useState([]);
@@ -15,6 +16,16 @@ export default function LandingPage() {
     setEntries([...entries, newEntry]);
     const newCount = `Count ${entries.length + 1}`;
     setCounts([...counts, newCount]);
+  };
+
+  // Function to handle Count button click and call the FastAPI backend
+  const handleCountClick = async () => {
+    try {
+      const response = await axios.get('http://127.0.0.1:8000/count');
+      console.log(response.data.message);  // Logs "Count operation completed successfully"
+    } catch (error) {
+      console.error("Error calling count endpoint:", error);
+    }
   };
 
   return (
@@ -34,7 +45,12 @@ export default function LandingPage() {
                 <Button variant="contained" onClick={addEntry} fullWidth sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}>
                   Add Entry
                 </Button>
-                <Button variant="contained" fullWidth color='success' sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}>
+                <Button 
+                  variant="contained" 
+                  onClick={handleCountClick} 
+                  fullWidth 
+                  color='success' 
+                  sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}>
                   Count
                 </Button>
               </Box>
