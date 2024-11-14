@@ -18,6 +18,7 @@ const VisuallyHiddenInput = styled('input')({
 export default function InputFileUpload(props) {
   return (
     <Button
+      sx={{height: '6vh'}}
       component="label"
       role={undefined}
       variant="contained"
