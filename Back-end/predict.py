@@ -5,7 +5,7 @@ from PIL import Image
 
 model = YOLO("runs/detect/train/weights/best.pt") #load best weights from training
 
-for i, img_file in enumerate(glob.glob("datasets/images/test/*.jpg")): #for image files in testing folder
+for i, img_file in enumerate(glob.glob("datasets/images/test/*.jpg")): #for image files in testing folder for model
     result = model.predict(img_file)[0] #predict using the image
     result = result.plot(line_width=1) #plot results with line width of 1
     result = result[:, :, ::-1] #switch from BGR to RGB
