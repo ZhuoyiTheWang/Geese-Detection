@@ -8,7 +8,7 @@ if __name__ == "__main__":
 
     #os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
-    model = YOLO("yolov8n.pt") #select model
+    model = YOLO("yolo11n.pt") #select model
 
     #train the models
     model.train(

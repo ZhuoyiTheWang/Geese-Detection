@@ -1,7 +1,0 @@
-path : ./Data/fully-labeled-goose-dataset
-train: images/train
-val: images/valid
-test: images/test
-
-names:
-  0 : GOOSE

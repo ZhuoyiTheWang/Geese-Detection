@@ -1,0 +1,8 @@
+path : ./Back-end/Data/fully-labeled-goose-dataset
+train: train/images
+val: valid/images
+test: test/images
+
+names:
+  0 : GOOSE
+  1 : GOSLING
