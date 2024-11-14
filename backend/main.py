@@ -1,16 +1,24 @@
 # main.py
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-# Root route for testing
+# Add CORS middleware to allow requests from the React frontend
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Allow only your React app to access the API
+    allow_credentials=True,
+    allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
+    allow_headers=["*"],  # Allow all headers
+)
+
 @app.get("/")
 async def root():
     return {"message": "Welcome to the FastAPI backend!"}
 
-# Count route
 @app.get("/count")
 async def count_entries():
-    # Replace this with your actual counting logic
-    count = 42  # Example count value
+    count = 42  # Replace with your actual counting logic
     return {"count": count}
+

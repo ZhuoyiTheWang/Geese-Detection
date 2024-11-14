@@ -18,15 +18,15 @@ export default function LandingPage() {
     setCounts([...counts, newCount]);
   };
 
-  // Function to handle Count button click and call the FastAPI backend
-  const handleCountClick = async () => {
-    try {
-      const response = await axios.get('http://127.0.0.1:8000/count');
-      console.log(response.data.message);  // Logs "Count operation completed successfully"
-    } catch (error) {
-      console.error("Error calling count endpoint:", error);
-    }
-  };
+// Function to handle Count button click and call the FastAPI backend
+const handleCountClick = async () => {
+  try {
+    const response = await axios.get('http://127.0.0.1:8000/count');
+    console.log(response.data.count);  // Logs the count value returned from the backend
+  } catch (error) {
+    console.error("Error calling count endpoint:", error);
+  }
+};
 
   return (
     <div>
