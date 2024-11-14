@@ -1,0 +1,9 @@
+Data/
+*.JSON
+*.pnt
+*.jpg
+*.xml
+datasets/
+*.pt
+__pycache__/
+runs/
