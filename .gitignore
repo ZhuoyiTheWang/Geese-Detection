@@ -4,6 +4,6 @@ Data/
 *.jpg
 *.xml
 datasets/
-*.pt
+yolo*.pt
 __pycache__/
 runs/
