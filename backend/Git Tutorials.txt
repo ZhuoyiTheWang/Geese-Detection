@@ -1,0 +1,42 @@
+To set up git, please review this article:
+https://docs.github.com/en/get-started/getting-started-with-git/set-up-git
+
+Make sure you configure your username and email:
+git config --global user.name "Your GitHub Username"
+git config --global user.email "your-email@example.com"
+
+List of useful git commands:
+git clone <repository-url>          # Copies a remote repository to your local machine.
+git status                          # Shows the status of your working directory and staged changes.
+git add <file>                      # Adds changes in your working directory to the staging area. Do git add -A to add everything.
+git commit -m "Commit message"      # Creates a new commit with changes that have been staged.
+git log                             # Displays the commit history of the current branch.
+git push origin <branch-name>       # Pushes your commits to a remote repository (GitHub or GitLab).
+git pull origin <branch-name>       # Fetches and merges changes from the remote repository into your current branch.
+git stash                           # Temporarily saves your local changes without committing.
+git stash apply                     # Applies stashed changes back into your working directory.
+git branch <branch-name>            # Creates a new branch for development. Do git branch -D <branch-name> to delete a branch.
+git checkout <branch-name>          # Switches to the specified branch. Do git checkout -b <branch-name> to create and switch simultaneously.
+
+Note: When you create a branch via git branch or git checkout -b, the new branch will be stemming from the current branch you're on.
+
+Proper git branching procedure:
+main
+|   \
+|   dev
+|    |  \   \
+|    |  fb1 fb2
+
+Please name the feature branches accordingly (e.g. 'detection-algorithm', 'webpage-setup'). 
+Please do not push directly onto main or dev, as we want to follow this procedure to ensure CICD (continuous integration/continuous delivery). 
+Correct way to start a new feature is to branch off of dev.
+This way if your feature introduces a bug that breaks things, it won't affect main which will be running.
+When the feature is entirely finished, create a pull request onto dev. Do not merge until someone reviews your code.
+
+Daily routine:
+1. Always pull before you make any edits. This minimizes conflicting code.
+2. After making your changes, do a git status to ensure you have only changed the files you intended to change.
+3. You can also do git diff to see the specific differences. Use arrows to go up and down and q to quit.
+4. git add <filename> to add a file to keep track or git add -A to add everything in the folder.
+5. git commit -m "Commit message" to commit your changes to local.
+6. Push to remote. If creating new branch locally and pushing, need to set upstream: git push --set-upstream origin <branch-name>
