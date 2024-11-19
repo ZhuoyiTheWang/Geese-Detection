@@ -1,7 +1,7 @@
 import { Card, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
 import { useState } from 'react';
 
-export default function ImageTable(props) {
+export default function ImageTable({ entries, counts }) {
     const [page, setPage] = useState(0);
     const rowsPerPage = 10;
 
@@ -11,7 +11,7 @@ export default function ImageTable(props) {
     };
 
     // Calculate the rows to display based on pagination
-    const rowsToDisplay = props.entries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
+    const rowsToDisplay = entries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
     const emptyRows = rowsPerPage - rowsToDisplay.length;
 
     return (
@@ -33,9 +33,12 @@ export default function ImageTable(props) {
                     <TableBody>
                         {rowsToDisplay.map((entry, index) => (
                             <TableRow key={index}>
-                                <TableCell sx={{ color: 'blue', textDecoration: 'underline' }}>{index + 1}.png</TableCell>
+                                <TableCell sx={{ color: 'blue', textDecoration: 'underline' }}>
+                                    {entry}
+                                </TableCell>
                                 <TableCell>Adam</TableCell>
-                                <TableCell>{index * 10}</TableCell>
+                                {/* Display the corresponding count */}
+                                <TableCell>{counts[index] ?? 0}</TableCell>
                             </TableRow>
                         ))}
                         {emptyRows > 0 && Array.from(Array(emptyRows)).map((_, idx) => (
@@ -51,7 +54,7 @@ export default function ImageTable(props) {
             <TablePagination
                 rowsPerPageOptions={[10]}
                 component="div"
-                count={props.entries.length}
+                count={entries.length}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

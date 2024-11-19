@@ -14,22 +14,27 @@ export default function LandingPage() {
 
   // Function to handle button click and add an entry
   const addEntry = () => {
-    const newEntry = `Entry ${entries.length + 1}`;
+    const newEntry = `Image ${entries.length + 1}.png`;
     setEntries([...entries, newEntry]);
-    const newCount = `Count ${entries.length + 1}`;
-    setCounts([...counts, newCount]);
+    setCounts([...counts, 0]); // Initialize count as 0
   };
 
   // Function to handle Count button click and call the FastAPI backend
   const handleCountClick = async () => {
-    // Display "Counting..." notification
+    if (entries.length === 0) {
+      toast.error("No entries to process!");
+      return;
+    }
+
     const loadingToastId = toast.loading("Counting...");
 
     try {
-      const response = await axios.get('http://127.0.0.1:8000/count');
-      console.log(response.data.count); // Logs the count value returned from the backend
+      const response = await axios.post('http://127.0.0.1:8000/count', {
+        images: entries,
+      });
+      setCounts(response.data.counts); // Update counts with response
       toast.update(loadingToastId, {
-        render: `Count Complete`,
+        render: "Count Complete!",
         type: "success",
         isLoading: false,
         autoClose: 3000,
@@ -87,3 +92,4 @@ export default function LandingPage() {
     </div>
   );
 }
+
