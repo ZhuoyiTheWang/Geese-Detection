@@ -1,3 +1,5 @@
+fastapi-env/
+__pycache__
 Data/
 *.JSON
 *.pnt
