@@ -2,6 +2,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import time
+import goose_finder
 
 app = FastAPI()
 
