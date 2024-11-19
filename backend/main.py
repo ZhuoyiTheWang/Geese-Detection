@@ -1,6 +1,7 @@
 # main.py
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+import time
 
 app = FastAPI()
 
@@ -18,7 +19,7 @@ async def root():
     return {"message": "Welcome to the FastAPI backend!"}
 
 @app.get("/count")
-async def count_entries():
+def count_entries():
+    time.sleep(2)  # Block for 3 seconds
     count = 42  # Replace with your actual counting logic
     return {"count": count}
-
