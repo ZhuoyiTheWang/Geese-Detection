@@ -1,8 +1,12 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import time
-import goose_finder
+import base64
+import os
+from tempfile import NamedTemporaryFile
+from goose_finder import count_geese
+import random
+from typing import List
 
 app = FastAPI()
 
@@ -17,15 +21,20 @@ app.add_middleware(
 
 # Pydantic model to define the request body
 class ImageList(BaseModel):
-    images: list[str]
+    images: list[str]  # List of Base64-encoded images
+
 
 @app.get("/")
 async def root():
     return {"message": "Welcome to the FastAPI backend!"}
 
+
 @app.post("/count")
 def count_entries(data: ImageList):
-    time.sleep(2)  # Simulate a delay for counting logic
-    image_count = len(data.images)
-    counts = [42] * image_count  # Set all counts to 42
-    return {"counts": counts}
+    try:
+        # Generate a list of random numbers equal to the number of images uploaded
+        random_counts = [random.randint(1, 100) for _ in data.images]
+        return {"counts": random_counts}
+
+    except Exception as e:
+        return {"error": str(e)}
