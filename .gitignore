@@ -1,0 +1,11 @@
+fastapi-env/
+__pycache__
+Data/
+*.JSON
+*.pnt
+*.jpg
+*.xml
+datasets/
+yolo*.pt
+__pycache__/
+runs/
