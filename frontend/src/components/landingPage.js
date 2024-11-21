@@ -19,7 +19,22 @@ export default function LandingPage() {
   const [selectedImageURL, setSelectedImageURL] = useState(null);
   const [openImageDialog, setOpenImageDialog] = useState(false);
 
-  const parks = ['Central Park', 'Greenwood Park', 'Sunset Park', 'Liberty Park'];
+  const parks = [
+    'Barnum',
+    'Berkeley',
+    'City Park',
+    'Garfield',
+    'Garland',
+    'Green Valley Ranch',
+    'Harvey',
+    'Huston',
+    'Rocky Mountain',
+    'Ruby Hill',
+    'Sloan',
+    'Vanderbilt',
+    'Washington'
+];
+
 
   // Open the upload dialog
   const handleDialogOpen = () => {
