@@ -32,9 +32,10 @@ async def root():
 @app.post("/count")
 def count_entries(data: ImageList):
     try:
-        # Generate a list of random numbers equal to the number of images uploaded
-        random_counts = [random.randint(1, 100) for _ in data.images]
-        return {"counts": random_counts}
+        #Call goose counting function on list of images
+        #Returns list of counts and generates output images locally
+        counts = count_geese(data)
+        return {"counts": counts}
 
     except Exception as e:
         return {"error": str(e)}
