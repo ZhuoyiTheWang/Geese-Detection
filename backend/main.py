@@ -34,7 +34,7 @@ def count_entries(data: ImageList):
     try:
         #Call goose counting function on list of images
         #Returns list of counts and generates output images locally
-        counts = count_geese(data)
+        counts, _ = count_geese(data)
         return {"counts": counts}
 
     except Exception as e:
