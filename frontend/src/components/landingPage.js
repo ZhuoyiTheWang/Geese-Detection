@@ -12,7 +12,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 export default function LandingPage() {
   const [entries, setEntries] = useState([]);
-  const [counts, setCounts] = useState([]);
   const [openUploadDialog, setOpenUploadDialog] = useState(false);
   const [currentFiles, setCurrentFiles] = useState([]);
   const [selectedPark, setSelectedPark] = useState('');
@@ -102,7 +101,6 @@ export default function LandingPage() {
   const addEntry = () => {
     const newEntry = `Image ${entries.length + 1}.png`;
     setEntries([...entries, newEntry]);
-    setCounts([...counts, 0]); // Initialize count as 0
   };
 
   // Handle the Count button click to call the FastAPI backend
@@ -117,9 +115,21 @@ export default function LandingPage() {
     const loadingToastId = toast.loading('Counting...');
     try {
         const response = await axios.post('http://127.0.0.1:8000/count', {
-            images: base64Images
+            images: base64Images,
         });
-        setCounts(response.data.counts);
+
+        const { counts, output_images } = response.data;
+
+        if (counts && output_images && counts.length === entries.length) {
+          const updatedEntries = entries.map((entry, index) => ({
+            ...entry,
+            count: counts[index],
+            outputImageURL: output_images[index],
+          }));
+          
+          setEntries(updatedEntries);
+        }
+
         toast.update(loadingToastId, {
             render: 'Count Complete!',
             type: 'success',
@@ -144,7 +154,7 @@ export default function LandingPage() {
         <Grid container spacing={2} sx={{ margin: '20px', marginTop: '20px', height: '100%' }}>
           {/* Left Column: Table inside the Card */}
           <Grid size={9}>
-            <ImageTable entries={entries} counts={counts} onEntryClick={showImage} />
+            <ImageTable entries={entries} onEntryClick={showImage} />
           </Grid>
 
           {/* Right Column: Buttons */}
