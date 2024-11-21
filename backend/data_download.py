@@ -2,10 +2,21 @@
 #Includes image files, pnt files, and JSON files
 
 import gdown
-from git import repo
+from git import Repo
 import os
 import requests
 from zipfile import ZipFile
+
+def download_custom_dataset() -> None:
+    # URL of the repository
+    repo_url = 'https://github.com/bbillharz/DPR-Goose-Dataset.git'
+    # Local directory to clone the repository into
+    local_dir = 'backend/Data/'
+
+    # Clone the repository
+    Repo.clone_from(repo_url, local_dir)
+    
+    print("Dataset downloaded to Data/goose-dataset")
 
 def download_from_gdrive() -> None:
     """Downloads all data from the google drive into the Data folder"""
@@ -29,7 +40,7 @@ def download_goose_mugshots() -> None:
     local_dir = 'Data/goose-dataset'
 
     # Clone the repository
-    repo.clone_from(repo_url, local_dir)
+    Repo.clone_from(repo_url, local_dir)
     
     print("Dataset downloaded to Data/goose-dataset")
 
@@ -58,5 +69,6 @@ if __name__ == "__main__":
 
     # git download
     # download_from_gdrive()
-    download_goose_mugshots()
-    download_lionhead_goose()
+    # download_goose_mugshots()
+    # download_lionhead_goose()
+    download_custom_dataset()
