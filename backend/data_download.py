@@ -1,23 +1,99 @@
-#Run this file to pull latest data from google drive:
-#Includes image files, pnt files, and JSON files
+# Run this file to pull latest data from the custom dataset github:
+# Includes images and labels
 
 import gdown
-from git import Repo
+from git import Repo, rmtree
 import os
 import requests
-from zipfile import ZipFile
+import shutil
+import random
+
 
 def download_custom_dataset() -> None:
+    """Downloads the custom labeled dataset from the Github repository and splits it for training."""
+
+    # DOWNLOAD
+
     # URL of the repository
     repo_url = 'https://github.com/bbillharz/DPR-Goose-Dataset.git'
     # Local directory to clone the repository into
-    local_dir = 'backend/Data/'
-
+    local_dir = 'backend/Data/custom/'
     # Clone the repository
     Repo.clone_from(repo_url, local_dir)
-    
-    print("Dataset downloaded to Data/goose-dataset")
 
+    # SPLIT
+
+    # Source directories
+    images_dir = 'backend/Data/custom/processed_images/images'
+    labels_dir = 'backend/Data/custom/processed_images/labels'
+
+    # Destination directories
+    train_images_dir = 'backend/datasets/train/images'
+    train_labels_dir = 'backend/datasets/train/labels'
+    valid_images_dir = 'backend/datasets/valid/images'
+    valid_labels_dir = 'backend/datasets/valid/labels'
+    test_images_dir = 'backend/datasets/test/images'
+    test_labels_dir = 'backend/datasets/test/labels'
+
+    # Function to remove and recreate directories
+    # We need this to remove any pre-existing files since TVT split is randomized
+    def recreate_directory(directory):
+        if os.path.exists(directory):
+            shutil.rmtree(directory)
+        os.makedirs(directory)
+
+    # Remove and recreate destination directories
+    recreate_directory(train_images_dir)
+    recreate_directory(train_labels_dir)
+    recreate_directory(valid_images_dir)
+    recreate_directory(valid_labels_dir)
+    recreate_directory(test_images_dir)
+    recreate_directory(test_labels_dir)
+
+    # Define split ratios
+    train_ratio = 0.7
+    valid_ratio = 0.15
+    test_ratio = 0.15
+
+    # Get a list of all image filenames
+    image_filenames = [f for f in os.listdir(images_dir) if f.endswith('.jpg')]
+
+    # Shuffle filenames
+    random.shuffle(image_filenames)
+
+    # Calculate split indices
+    total_images = len(image_filenames)
+    train_index = int(train_ratio * total_images)
+    valid_index = train_index + int(valid_ratio * total_images)
+
+    # Split filenames
+    train_filenames = image_filenames[:train_index]
+    valid_filenames = image_filenames[train_index:valid_index]
+    test_filenames = image_filenames[valid_index:]
+
+    # Function to copy files
+    def copy_files(filenames, dest_images_dir, dest_labels_dir):
+        for filename in filenames:
+            base_name = os.path.splitext(filename)[0]
+            image_path = os.path.join(images_dir, filename)
+            label_path = os.path.join(labels_dir, base_name + '.txt')
+            
+            shutil.copy(image_path, dest_images_dir)
+            shutil.copy(label_path, dest_labels_dir)
+
+    # Copy training files
+    copy_files(train_filenames, train_images_dir, train_labels_dir)
+
+    # Copy validation files
+    copy_files(valid_filenames, valid_images_dir, valid_labels_dir)
+
+    # Copy test files
+    copy_files(test_filenames, test_images_dir, test_labels_dir)
+
+    # Remove dataset repo
+    rmtree(local_dir)
+
+    
 def download_from_gdrive() -> None:
     """Downloads all data from the google drive into the Data folder"""
     url = "https://drive.google.com/drive/folders/1bG2NObayMcbN4XkuUUdwv9l88IzvlAFE?usp=sharing" #shareable link for google drive folder
@@ -67,8 +143,4 @@ def download_lionhead_goose() -> None:
 
 if __name__ == "__main__":
 
-    # git download
-    # download_from_gdrive()
-    # download_goose_mugshots()
-    # download_lionhead_goose()
     download_custom_dataset()

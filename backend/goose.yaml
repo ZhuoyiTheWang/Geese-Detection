@@ -1,4 +1,4 @@
-path : ./Back-end/Data/fully-labeled-goose-dataset
+path : backend/datasets
 train: train/images
 val: valid/images
 test: test/images
