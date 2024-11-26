@@ -27,7 +27,7 @@ def pillow_image_to_base64(image, format="PNG"):
 
 
 def count_geese(img_list):
-    model = YOLO("./Model/best.pt") #load best weights from training
+    model = YOLO("./Model/custom_150_no_opt_best.pt") #load best weights from training
 
     counts = [] #create list for counts
     result_images = []
