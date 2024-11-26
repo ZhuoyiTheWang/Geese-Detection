@@ -33,8 +33,8 @@ def count_geese(img_list):
     result_images = []
 
     for i, img in enumerate(img_list): #iterate through images
-        image_np = base64_to_pillow(img)
-        result = model.predict(image_np)[0] #predict using the image
+        image_pil = base64_to_pillow(img)
+        result = model(image_pil)[0] #predict using the image
         counts.append(len(result.boxes)) #add the number of geese counted to the list
 
         result = result.plot(line_width=1) #plot results with line width of 1
@@ -42,11 +42,7 @@ def count_geese(img_list):
         result = Image.fromarray(result) #plot as image
 
         result = pillow_image_to_base64(result)
-
         result_images.append(result)
-        
-        # result.save(f'OutputImages/output_{i}.jpg') #save image as output with same numerical value
-        # output_image_names.append(f'OutputImages/output_{i}.jpg') #add name to list of output file names
 
     return counts, result_images
 

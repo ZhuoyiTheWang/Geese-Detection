@@ -36,7 +36,6 @@ def count_entries(data: ImageList):
         #Returns list of counts and generates output images locally
         counts, output_images = count_geese(data.images)
         print(counts)
-        # print(output_images)
         return {"counts": counts, "output_images": output_images}
 
     except Exception as e:

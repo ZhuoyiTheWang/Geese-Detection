@@ -29,12 +29,16 @@ export default function ImageTable({ entries, onEntryClick }) {
           <TableBody>
             {rowsToDisplay.map((entry, index) => (
               <TableRow key={index}>
-                <TableCell
-                  sx={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
-                  onClick={() => onEntryClick(entry.fileURL)} // Call onEntryClick with image URL
-                >
-                  {entry.name}
-                </TableCell>
+                {entry.count === 'Uncounted' ? (
+                  <TableCell> {entry.name} </TableCell>
+                ) : (
+                  <TableCell
+                    sx={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                    onClick={() => onEntryClick(entry.fileURL)}
+                  >
+                    {entry.name}
+                  </TableCell>
+                )}
                 <TableCell>{entry.park}</TableCell>
                 <TableCell>{entry.count ?? 0}</TableCell>
               </TableRow>

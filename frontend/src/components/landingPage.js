@@ -97,12 +97,6 @@ export default function LandingPage() {
     setCurrentFiles((prevFiles) => prevFiles.filter(file => file !== fileToRemove));
   };
 
-  // Add a dummy entry for testing
-  const addEntry = () => {
-    const newEntry = `Image ${entries.length + 1}.png`;
-    setEntries([...entries, newEntry]);
-  };
-
   // Handle the Count button click to call the FastAPI backend
   const handleCountClick = async () => {
     if (entries.length === 0) {
@@ -124,9 +118,9 @@ export default function LandingPage() {
           const updatedEntries = entries.map((entry, index) => ({
             ...entry,
             count: counts[index],
-            outputImageURL: output_images[index],
+            fileURL: output_images[index],
           }));
-          
+
           setEntries(updatedEntries);
         }
 
