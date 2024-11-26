@@ -1,19 +1,22 @@
-#FILE PURPOSE: Document used to preliminary test training model using yolov8
+#FILE PURPOSE: Document used to preliminary test training model using yolov11
 
 from ultralytics import YOLO
-import os
+from data_download import download_custom_dataset
 
 
 if __name__ == "__main__":
 
-    #os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
+    # download data
+    download_custom_dataset()
 
-    model = YOLO("yolo11n.pt") #select model
+    # select model
+    model = YOLO("yolo11n.pt")
 
-    #train the models
+    # train the model
     model.train(
-        data = "goose.yaml", #yaml file for model configuration
-        epochs = 100, #number of training periods
-        imgsz = (640,640), #w,h
-        batch = 4
+        data = "backend/goose.yaml", #yaml file for model configuration
+        epochs = 10, #number of training periods
+        imgsz = [640,640], #w,h
+        batch = 16,
+        single_cls = True
     )
