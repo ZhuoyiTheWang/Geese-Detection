@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
-// import bcrypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
 import { TextField, Button, Typography, Box, Avatar } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 export default function LoginPage({ setIsAuthenticated }) {
   const [password, setPassword] = useState('');
+  const bcrypt = require('bcryptjs');
 
-  const handleLogin = () => {
-    const correctPassword = 'goose'; // Replace with process.env.REACT_APP_HASHED_PASSWORD for environment variable
+  const storedHash = process.env.NEXT_PUBLIC_HASHED_PASSWORD;
 
-    if (password === correctPassword) {
+  const handleLogin = async () => {
+    const isPasswordCorrect = await bcrypt.compare(password, storedHash);
+
+    if (isPasswordCorrect) {
       setIsAuthenticated(true); // Update authentication state
     } else {
       toast.error('Incorrect Password');
