@@ -64,6 +64,25 @@ export default function LandingPage() {
     setSelectedImageURL(null);
   };
 
+  const calculateParkTotals = (entries, parks) => {
+    const parkTotals = {};
+    parks.forEach((park) => {
+      parkTotals[park] = 0;
+    });
+  
+    // Update counts based on entries
+    entries.forEach((entry) => {
+      const park = entry.park;
+      const count = entry.count === 'Uncounted' ? 0 : parseInt(entry.count, 10);
+  
+      if (parkTotals[park] !== undefined) {
+        parkTotals[park] += count;
+      }
+    });
+  
+    return parkTotals;
+  };
+
   // Add entries from uploaded files
   const addEntries = () => {
     const newEntries = [];
@@ -173,7 +192,7 @@ export default function LandingPage() {
                   Count
                 </Button>
               </Box>
-              <TotalTable />
+              <TotalTable parkTotals={calculateParkTotals(entries, parks)} />
             </Box>
           </Grid>
         </Grid>
