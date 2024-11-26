@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+// import bcrypt from 'bcryptjs';
 import { TextField, Button, Typography, Box, Avatar } from '@mui/material';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,7 +29,7 @@ export default function LoginPage({ setIsAuthenticated }) {
       <Avatar
         alt="Flock Watch Logo"
         src="https://files.oaiusercontent.com/file-StFIeUjxO04bFr5TjEqcK7VN?se=2024-11-19T15%3A56%3A21Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D505045ce-b8b2-4f19-b86e-cd97192e8a37.webp&sig=W032OPvq87XnL5bl0gZtUKQtZYoExeqk3B1pvZVPYgA%3D"
-        sx={{ width: 160, height: 160, mb: 2 }}
+        sx={{ width: 500, height: 500, mb: 2 }}
       />
       <Typography variant="h4" gutterBottom>
         Flock Watch
