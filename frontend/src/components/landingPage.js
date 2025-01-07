@@ -9,6 +9,7 @@ import InputFileUpload from './fileUpload';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { v4 as uuidv4 } from 'uuid';
 
 export default function LandingPage() {
   const [entries, setEntries] = useState([]);
@@ -93,6 +94,7 @@ export default function LandingPage() {
         reader.onload = (e) => {
           const fileURL = e.target.result;
           const entry = {
+            id: uuidv4(),
             name: file.name,
             fileURL: fileURL,
             count: 'Uncounted',
@@ -118,12 +120,14 @@ export default function LandingPage() {
 
   // Handle the Count button click to call the FastAPI backend
   const handleCountClick = async () => {
-    if (entries.length === 0) {
-        toast.error('No entries to process!');
+    const uncountedEntries = entries.filter(entry => entry.count === 'Uncounted');
+
+    if (uncountedEntries.length === 0) {
+        toast.error('No uncounted entries to process!');
         return;
     }
 
-    const base64Images = entries.map(entry => entry.fileURL);
+    const base64Images = uncountedEntries.map(entry => entry.fileURL);
 
     const loadingToastId = toast.loading('Counting...');
     try {
@@ -133,14 +137,20 @@ export default function LandingPage() {
 
         const { counts, output_images } = response.data;
 
-        if (counts && output_images && counts.length === entries.length) {
-          const updatedEntries = entries.map((entry, index) => ({
-            ...entry,
-            count: counts[index],
-            fileURL: output_images[index],
-          }));
+        if (counts && output_images && counts.length === uncountedEntries.length) {
+          const updatedEntries = entries.map(entry => {
+            const index = uncountedEntries.findIndex(uncounted => uncounted.id === entry.id);
+            if (index !== -1) {
+                return {
+                    ...entry,
+                    count: counts[index],
+                    fileURL: output_images[index],
+                };
+            }
+            return entry;
+        });
 
-          setEntries(updatedEntries);
+        setEntries(updatedEntries);
         }
 
         toast.update(loadingToastId, {
