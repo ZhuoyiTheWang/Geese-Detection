@@ -131,7 +131,7 @@ export default function LandingPage() {
 
     const loadingToastId = toast.loading('Counting...');
     try {
-        const response = await axios.post('http://127.0.0.1:8000/count', {
+        const response = await axios.post('http://geese-detection.us-east-1.elasticbeanstalk.com/count', {
             images: base64Images,
         });
 
