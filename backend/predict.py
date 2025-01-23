@@ -51,27 +51,29 @@ def counts_on_unlabeled_data(model, img_num, save, show):
             result.save(f'OutputImages/output_unlabeled_{img_file[-8:]}') #save image as output with same numerical value
 
 
-model = YOLO("Model/custom_150_no_opt_best.pt") #load best weights from training
+if __name__ == "__main__":
+    
+    model = YOLO("Model/custom_150_no_opt_best.pt") #load best weights from training
 
-counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, img_num=22, save=False, show=False)
+    counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, img_num=22, save=False, show=False)
 
-x = np.linspace(0, 100, 200) #generate line 
-y = x
+    x = np.linspace(0, 100, 200) #generate line 
+    y = x
 
-plt.figure()
-plt.scatter(actual_counts, predicted_counts)
-plt.plot(x, y, color='red')
-plt.xlabel('Actual count')
-plt.ylabel('Predicted count')
-plt.title('Confusion Plot')
-plt.show()
+    plt.figure()
+    plt.scatter(actual_counts, predicted_counts)
+    plt.plot(x, y, color='red')
+    plt.xlabel('Actual count')
+    plt.ylabel('Predicted count')
+    plt.title('Confusion Plot')
+    plt.show()
 
-plt.figure()
-#create bins for histogram
-bins = [-200, -150, -120, -100, -90, -80, -70, -60, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 150, 200]
-plt.hist(x=counts_accuracy, bins=bins, edgecolor='black')
-plt.xlabel('Error Percentage')
-plt.ylabel('Frequency')
-plt.vlines(x=0, ymin=0, ymax=5, colors='red')
-plt.title('Error Frequency')
-plt.show()
+    plt.figure()
+    #create bins for histogram
+    bins = [-200, -150, -120, -100, -90, -80, -70, -60, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 150, 200]
+    plt.hist(x=counts_accuracy, bins=bins, edgecolor='black')
+    plt.xlabel('Error Percentage')
+    plt.ylabel('Frequency')
+    plt.vlines(x=0, ymin=0, ymax=5, colors='red')
+    plt.title('Error Frequency')
+    plt.show()
