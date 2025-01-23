@@ -70,7 +70,7 @@ for i, xml_file in enumerate(glob.glob("Data/lionhead-dataset/Annotations/*.xml"
        #os.rename(source_path, destination_path) #store file under new name at specified path
     #except FileExistsError: #if file already exists
         #os.remove(destination_path) #remove file
-        #os.rename(source_path, destination_path) #store file under new name at specified path
+     #os.rename(source_path, destination_path) #store file under new name at specified path
     
 
 
