@@ -14,6 +14,8 @@ def download_custom_dataset() -> None:
 
     # DOWNLOAD
 
+    print("Cloning Custom Dataset")
+
     # URL of the repository
     repo_url = 'https://github.com/bbillharz/DPR-Goose-Dataset.git'
     # Local directory to clone the repository into
@@ -22,6 +24,8 @@ def download_custom_dataset() -> None:
     Repo.clone_from(repo_url, local_dir)
 
     # SPLIT
+
+    print("Splitting images into folders")
 
     # Source directories
     images_dir = 'backend/Data/custom/processed_images/images'
