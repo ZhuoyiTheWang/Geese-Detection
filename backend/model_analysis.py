@@ -1,4 +1,5 @@
-#FILE PURPOSE: test model trained on testing data
+#FILE PURPOSE: test trained model, assess accuracy using two metrics
+
 from ultralytics import YOLO
 import glob
 from PIL import Image
@@ -14,7 +15,7 @@ def count_on_labeled_data(model, img_num = None, save = False, show = False): #i
 
     for i, img_file in enumerate(glob.glob("datasets/test/images/*.jpg")): #for image files in testing folder for model
         if img_num:
-            if i >= img_num: #to start, only run with 5 test cases
+            if i >= img_num: #only run with number of images given
                 break #end for loop
 
         file_names.append(img_file[21:])
@@ -36,6 +37,29 @@ def count_on_labeled_data(model, img_num = None, save = False, show = False): #i
         if save: #save images if true
             result.save(f'OutputImages/output_{img_file[-8:]}') #save image as output with same numerical value
 
+    x = np.linspace(0, 100, 200) #generate line 
+    y = x
+
+    plt.figure()
+    plt.scatter(actual_counts, predicted_counts)
+    plt.plot(x, y, color='red')
+    plt.xlabel('Actual count')
+    plt.ylabel('Predicted count')
+    plt.title('Confusion Plot')
+    #plt.savefig('Confusion_plot.png')
+    plt.show()
+
+    plt.figure()
+    #create bins for histogram
+    bins = [-200, -150, -120, -100, -90, -80, -70, -60, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 150, 200]
+    plt.hist(x=counts_accuracy, bins=bins, edgecolor='black')
+    plt.xlabel('Error Percentage')
+    plt.ylabel('Frequency')
+    plt.vlines(x=0, ymin=0, ymax=5, colors='red')
+    plt.title('Error Frequency')
+    #plt.savefig('Error_histogram.png')
+    plt.show()
+
     return counts_accuracy, file_names, actual_counts, predicted_counts
 
 
@@ -55,29 +79,6 @@ def counts_on_unlabeled_data(model, img_num, save, show):
 
 if __name__ == "__main__":
 
-    model = YOLO("models/train5/weights/best.pt") #load best weights from training
+    model = YOLO("Model/custom_150_no_opt_best.pt") #load best weights from training
 
-    counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, save=True, show=False)
-
-    x = np.linspace(0, 100, 200) #generate line 
-    y = x
-
-    plt.figure()
-    plt.scatter(actual_counts, predicted_counts)
-    plt.plot(x, y, color='red')
-    plt.xlabel('Actual count')
-    plt.ylabel('Predicted count')
-    plt.title('Confusion Plot')
-    plt.savefig('confusion_plot.png')
-    plt.show()
-
-    plt.figure()
-    #create bins for histogram
-    bins = [-200, -150, -120, -100, -90, -80, -70, -60, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 150, 200]
-    plt.hist(x=counts_accuracy, bins=bins, edgecolor='black')
-    plt.xlabel('Error Percentage')
-    plt.ylabel('Frequency')
-    plt.vlines(x=0, ymin=0, ymax=5, colors='red')
-    plt.title('Error Frequency')
-    plt.savefig('error_histogram.png')
-    plt.show()
+    counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, img_num=5, save=False, show=True)
