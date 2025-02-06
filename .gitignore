@@ -9,5 +9,6 @@ datasets/
 yolo*.pt
 __pycache__/
 runs/
+backend/models
 backend/__pycache__
 backend/geese-detection

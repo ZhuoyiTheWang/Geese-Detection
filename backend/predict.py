@@ -6,16 +6,16 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-def count_on_labeled_data(model, img_num, save, show): #img_num = number of images to be processed, save = boolean of whether or not files should be saved, show = boolean of whether or not images should be shown
+def count_on_labeled_data(model, img_num = None, save = False, show = False): #img_num = number of images to be processed, save = boolean of whether or not files should be saved, show = boolean of whether or not images should be shown
     actual_counts = [] 
     predicted_counts = []
     counts_accuracy = [] #create list accuracy of counts
     file_names = [] #file names
 
     for i, img_file in enumerate(glob.glob("datasets/test/images/*.jpg")): #for image files in testing folder for model
-        if i >= img_num: #to start, only run with 5 test cases
-            return counts_accuracy, file_names, actual_counts, predicted_counts
-            break #end for loop
+        if img_num:
+            if i >= img_num: #to start, only run with 5 test cases
+                break #end for loop
 
         file_names.append(img_file[21:])
         result = model.predict(img_file)[0] #predict using the image
@@ -34,7 +34,9 @@ def count_on_labeled_data(model, img_num, save, show): #img_num = number of imag
         if show: #show images if true
             result.show()
         if save: #save images if true
-            result.save(f'OutputImages/output_{img_file[-12:]}') #save image as output with same numerical value
+            result.save(f'OutputImages/output_{img_file[-8:]}') #save image as output with same numerical value
+
+    return counts_accuracy, file_names, actual_counts, predicted_counts
 
 
 def counts_on_unlabeled_data(model, img_num, save, show):
@@ -51,27 +53,31 @@ def counts_on_unlabeled_data(model, img_num, save, show):
             result.save(f'OutputImages/output_unlabeled_{img_file[-8:]}') #save image as output with same numerical value
 
 
-model = YOLO("Model/custom_150_no_opt_best.pt") #load best weights from training
+if __name__ == "__main__":
 
-counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, img_num=22, save=False, show=False)
+    model = YOLO("models/train5/weights/best.pt") #load best weights from training
 
-x = np.linspace(0, 100, 200) #generate line 
-y = x
+    counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, save=True, show=False)
 
-plt.figure()
-plt.scatter(actual_counts, predicted_counts)
-plt.plot(x, y, color='red')
-plt.xlabel('Actual count')
-plt.ylabel('Predicted count')
-plt.title('Confusion Plot')
-plt.show()
+    x = np.linspace(0, 100, 200) #generate line 
+    y = x
 
-plt.figure()
-#create bins for histogram
-bins = [-200, -150, -120, -100, -90, -80, -70, -60, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 150, 200]
-plt.hist(x=counts_accuracy, bins=bins, edgecolor='black')
-plt.xlabel('Error Percentage')
-plt.ylabel('Frequency')
-plt.vlines(x=0, ymin=0, ymax=5, colors='red')
-plt.title('Error Frequency')
-plt.show()
+    plt.figure()
+    plt.scatter(actual_counts, predicted_counts)
+    plt.plot(x, y, color='red')
+    plt.xlabel('Actual count')
+    plt.ylabel('Predicted count')
+    plt.title('Confusion Plot')
+    plt.savefig('confusion_plot.png')
+    plt.show()
+
+    plt.figure()
+    #create bins for histogram
+    bins = [-200, -150, -120, -100, -90, -80, -70, -60, -50, -45, -40, -35, -30, -25, -20, -15, -10, -5, 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100, 120, 150, 200]
+    plt.hist(x=counts_accuracy, bins=bins, edgecolor='black')
+    plt.xlabel('Error Percentage')
+    plt.ylabel('Frequency')
+    plt.vlines(x=0, ymin=0, ymax=5, colors='red')
+    plt.title('Error Frequency')
+    plt.savefig('error_histogram.png')
+    plt.show()
