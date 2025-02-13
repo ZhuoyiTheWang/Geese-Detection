@@ -1,12 +1,10 @@
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-import base64
-import os
 from tempfile import NamedTemporaryFile
-from goose_finder import count_geese
-import random
+#from goose_finder import count_geese
 from typing import List
+from detectwithtfl import tf_count_geese
 
 app = FastAPI()
 
@@ -34,7 +32,7 @@ def count_entries(data: ImageList):
     try:
         #Call goose counting function on list of images
         #Returns list of counts and generates output images locally
-        counts, output_images = count_geese(data.images)
+        counts, output_images = tf_count_geese(data.images)
         return {"counts": counts, "output_images": output_images}
 
     except Exception as e:
