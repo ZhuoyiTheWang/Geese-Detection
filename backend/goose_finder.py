@@ -1,7 +1,7 @@
 #FILE PURPOSE: 
 # Use to count the number of geese using the model
 
-# from ultralytics import YOLO
+from ultralytics import YOLO
 # import glob
 from PIL import Image
 import base64
