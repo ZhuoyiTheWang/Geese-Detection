@@ -27,10 +27,11 @@ def tf_count_geese(img_list):
     counts = [] #create list for counts
     result_images = [] #create list for images
 
-    model_path = "backend/Model/custom_150_no_opt_best_saved_model/custom_150_no_opt_best_float32.tflite"
+    model_path = "./Model/custom_150_no_opt_best_saved_model/custom_150_no_opt_best_float32.tflite"
     for i, img in enumerate(img_list): #for each image give
         image_pil = base64_to_pillow(img) #convert to pillow for detection
-        count, labeled_img = tf_detect(model_path, img_path=image_pil) #run detection
+
+        count, labeled_img = tf_detect(model_path, image_pil) #run detection
         labeled_img = pillow_image_to_base64(labeled_img) #convert back to base64 for front-end
         result_images.append(labeled_img) #append labeled image
         counts.append(count) #append returned count
@@ -82,7 +83,7 @@ def nms(boxes, scores, iou_threshold=0.4):
     return keep
 
 
-def tf_detect(model_path, img_path):
+def tf_detect(model_path, image):
     # Load the TFLite model
     interpreter = tflite.Interpreter(model_path=model_path)
     interpreter.allocate_tensors()
@@ -91,14 +92,13 @@ def tf_detect(model_path, img_path):
     input_details = interpreter.get_input_details()
     output_details = interpreter.get_output_details()
 
-    # Load and preprocess the original image
-    original_image = Image.open(img_path)
-    original_width, original_height = original_image.size
+    # Use the provided Pillow image directly
+    original_width, original_height = image.size
 
-    # Resize the image to match model input size (assuming 640x640)
+    # Resize the image to match the model's input size (assuming 640x640)
     input_size = 640  # Adjust if your model uses a different input size
-    input_image = original_image.resize((input_size, input_size))
-    input_image = np.array(input_image, dtype=np.float32) / 255.0  # Normalize to 0-1 if needed
+    input_image = image.resize((input_size, input_size))
+    input_image = np.array(input_image, dtype=np.float32) / 255.0  # Normalize if needed
     input_image = np.expand_dims(input_image, axis=0)  # Add batch dimension
 
     # Run inference
@@ -106,21 +106,20 @@ def tf_detect(model_path, img_path):
     interpreter.invoke()
 
     # Extract the output tensor
-    output_data = interpreter.get_tensor(output_details[0]['index'])  # Shape: (1, 6, 8400)
-    output_data = np.squeeze(output_data)  # Shape becomes (6, 8400)
+    output_data = interpreter.get_tensor(output_details[0]['index'])
+    output_data = np.squeeze(output_data)
 
-    # Extract individual components
+    # Unpack the outputs
     x_centers, y_centers, widths, heights, confidences, class_ids = output_data
 
     # Set confidence threshold
     confidence_threshold = 0.3
-    indices = np.where(confidences > confidence_threshold)[0]  # Indices of valid detections
+    indices = np.where(confidences > confidence_threshold)[0]
 
     # Convert boxes to original image scale
     boxes = []
     confidences_list = []
     class_ids_list = []
-
     for i in indices:
         x = x_centers[i] * original_width
         y = y_centers[i] * original_height
@@ -136,36 +135,33 @@ def tf_detect(model_path, img_path):
         confidences_list.append(float(confidences[i]))
         class_ids_list.append(int(class_ids[i]))
 
-    # Apply NMS
+    # Apply Non-Maximum Suppression (NMS)
     selected_indices = nms(boxes, confidences_list, iou_threshold=0.4)
 
-    # Draw bounding boxes using PIL
-    draw = ImageDraw.Draw(original_image)
+    # Draw bounding boxes and labels on the original image
+    draw = ImageDraw.Draw(image)
     for i in selected_indices:
         x_min, y_min, x_max, y_max = boxes[i]
-        class_id = class_ids_list[i]
         confidence = confidences_list[i]
-
-        # Draw rectangle
-        draw.rectangle([x_min, y_min, x_max, y_max], outline="blue", width=2)
-
-        # Draw rectangle for label
-        draw.rectangle([x_min, y_min-10, x_min+55, y_min+2], fill="blue")
-
-        # Draw label
         label = f"Goose: {confidence:.2f}"
+
+        # Draw rectangle for detection
+        draw.rectangle([x_min, y_min, x_max, y_max], outline="blue", width=2)
+        # Draw label background
+        draw.rectangle([x_min, y_min-10, x_min+55, y_min+2], fill="blue")
+        # Draw label text
         draw.text((x_min, y_min - 10), label, fill="white")
 
-    # Show the image with bounding boxes
+    # Optionally display the image (remove plt calls if not needed)
     plt.figure(figsize=(10, 10))
-    plt.imshow(original_image)
+    plt.imshow(image)
     plt.axis("off")
 
-    return len(selected_indices), original_image
+    return len(selected_indices), image
 
-#TESTING:
+# #TESTING:
 # img_list = []
-# for i, img_file in enumerate(glob.glob("backend/datasets/test/images/*.jpg")): #for image files in testing folder for model
+# for i, img_file in enumerate(glob.glob("datasets/test/images/*.jpg")): #for image files in testing folder for model
 #     #img_file = pillow_image_to_base64(img_file)
 #     img_list.append(img_file)
 
