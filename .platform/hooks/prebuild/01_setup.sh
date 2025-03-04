@@ -3,5 +3,7 @@
 sudo mkdir -p /mnt/large_tmp
 sudo chmod 1777 /mnt/large_tmp
 
-# Export TMPDIR so subsequent commands (like pip install) use it
+# Ensure TMPDIR is globally set for all processes
+echo "export TMPDIR=/mnt/large_tmp" | sudo tee -a /etc/profile.d/tmpdir.sh
+sudo chmod +x /etc/profile.d/tmpdir.sh
 export TMPDIR=/mnt/large_tmp
