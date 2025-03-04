@@ -1,7 +1,6 @@
 #FILE PURPOSE: 
 # Use to count the number of geese using the model
 
-from ultralytics import YOLO
 # import glob
 from PIL import Image
 import base64
@@ -26,9 +25,7 @@ def pillow_image_to_base64(image, format="PNG"):
     return base64_string
 
 
-def count_geese(img_list):
-    model = YOLO("./Model/custom_150_no_opt_best.pt") #load best weights from training
-
+def count_geese(model, img_list):
     counts = [] #create list for counts
     result_images = []
 
