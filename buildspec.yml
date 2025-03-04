@@ -1,0 +1,6 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo "Setting executable permissions on prebuild script"
+      - chmod +x .platform/hooks/prebuild/01_setup.sh
