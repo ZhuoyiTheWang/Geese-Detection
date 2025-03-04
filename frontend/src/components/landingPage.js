@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from 'react'; 
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typography, IconButton, List, ListItem, Select, FormControl, InputLabel, MenuItem } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -10,6 +10,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
+import { useMediaQuery } from '@mui/material';
 
 export default function LandingPage() {
   const [entries, setEntries] = useState([]);
@@ -18,6 +19,8 @@ export default function LandingPage() {
   const [selectedPark, setSelectedPark] = useState('');
   const [selectedImageURL, setSelectedImageURL] = useState(null);
   const [openImageDialog, setOpenImageDialog] = useState(false);
+
+  const isMobile = useMediaQuery('(max-width:600px)');
 
   const parks = [
     'Barnum',
@@ -181,30 +184,36 @@ export default function LandingPage() {
           </Grid>
 
           {/* Right Column: Buttons */}
-          <Grid size={3}>
-            <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-              <Box>
-                <Button
-                  variant="contained"
-                  onClick={handleDialogOpen}
-                  fullWidth
-                  sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}
-                >
-                  Add Entry
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={handleCountClick}
-                  fullWidth
-                  color="success"
-                  sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}
-                >
-                  Count
-                </Button>
-              </Box>
-              <TotalTable parkTotals={calculateParkTotals(entries, parks)} />
-            </Box>
-          </Grid>
+          <Grid item xs={12} md={3}>
+  <Box
+    sx={{
+      display: 'flex',
+      flexDirection: isMobile ? 'row' : 'column',
+      justifyContent: isMobile ? 'center' : 'flex-start',
+      alignItems: 'center',
+      gap: isMobile ? '10px' : '20px',
+      flexWrap: isMobile ? 'wrap' : 'nowrap',
+    }}
+  >
+    <Button 
+      variant="contained" 
+      onClick={handleDialogOpen} 
+      sx={{ fontSize: '1.5rem', flex: 1, minWidth: isMobile ? '40%' : '100%' }}
+    >
+      Add Entry
+    </Button>
+    <Button 
+      variant="contained" 
+      color="success" 
+      onClick={handleCountClick} 
+      sx={{ fontSize: '1.5rem', flex: 1, minWidth: isMobile ? '40%' : '100%' }}
+    >
+      Count
+    </Button>
+  </Box>
+  <TotalTable parkTotals={calculateParkTotals(entries, parks)} />
+</Grid>
+
         </Grid>
       </Box>
 
