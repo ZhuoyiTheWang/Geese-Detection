@@ -11,6 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
 import { useMediaQuery } from '@mui/material';
+import { Tabs, Tab } from '@mui/material';
 
 export default function LandingPage() {
   const [entries, setEntries] = useState([]);
@@ -21,6 +22,11 @@ export default function LandingPage() {
   const [openImageDialog, setOpenImageDialog] = useState(false);
 
   const isMobile = useMediaQuery('(max-width:600px)');
+
+  const [selectedTab, setSelectedTab] = useState(0);
+  const handleTabChange = (event, newValue) => {
+    setSelectedTab(newValue);
+  };  
 
   const parks = [
     'Barnum',
@@ -173,52 +179,33 @@ export default function LandingPage() {
     }
 };
 
-  return (
-    <div>
-      <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-        <TitleComponent />
-        <Grid container spacing={2} sx={{ margin: '20px', marginTop: '20px', height: '100%' }}>
-          {/* Left Column: Table inside the Card */}
-          <Grid size={9}>
-            <ImageTable entries={entries} onEntryClick={showImage} />
-          </Grid>
-
-          {/* Right Column: Buttons */}
-          <Grid item xs={12} md={3}>
-  <Box
-    sx={{
-      display: 'flex',
-      flexDirection: isMobile ? 'row' : 'column',
-      justifyContent: isMobile ? 'center' : 'flex-start',
-      alignItems: 'center',
-      gap: isMobile ? '10px' : '20px',
-      flexWrap: isMobile ? 'wrap' : 'nowrap',
-    }}
-  >
-    <Button 
-      variant="contained" 
-      onClick={handleDialogOpen} 
-      sx={{ fontSize: '1.5rem', flex: 1, minWidth: isMobile ? '40%' : '100%' }}
-    >
-      Add Entry
-    </Button>
-    <Button 
-      variant="contained" 
-      color="success" 
-      onClick={handleCountClick} 
-      sx={{ fontSize: '1.5rem', flex: 1, minWidth: isMobile ? '40%' : '100%' }}
-    >
-      Count
-    </Button>
-  </Box>
-  <TotalTable parkTotals={calculateParkTotals(entries, parks)} />
-</Grid>
-
+return isMobile ? (
+  <div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <TitleComponent />
+      <Tabs value={selectedTab} onChange={handleTabChange} centered>
+        <Tab label="Images" />
+        <Tab label="Results" />
+      </Tabs>
+      {selectedTab === 0 && (
+        <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <Button variant="contained" onClick={handleDialogOpen} sx={{ fontSize: '1.5rem', width: '100%' }}>
+            Add Entry
+          </Button>
+          <ImageTable entries={entries} onEntryClick={showImage} sx={{ flex: 1, minHeight: 0 }} />
         </Grid>
-      </Box>
-
-      {/* Dialog for file upload */}
-      <Dialog open={openUploadDialog} onClose={handleDialogClose} fullWidth>
+      )}
+      {selectedTab === 1 && (
+        <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <Button variant="contained" color="success" onClick={handleCountClick} sx={{ fontSize: '1.5rem', width: '100%' }}>
+            Count
+          </Button>
+          <TotalTable parkTotals={calculateParkTotals(entries, parks)} sx={{ flex: 1, minHeight: 0, width: '100%', overflowX: 'auto' }} />
+        </Grid>
+      )}
+    </Box>
+    {/* Dialog for file upload */}
+    <Dialog open={openUploadDialog} onClose={handleDialogClose} fullWidth>
         <DialogTitle>Upload Documents</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column' }}>
@@ -277,6 +264,90 @@ export default function LandingPage() {
 
       {/* Toastify Container for notifications */}
       <ToastContainer position="top-right" />
-    </div>
-  );
+  </div>
+) : (
+  <div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <TitleComponent />
+      <Grid container spacing={2} sx={{ margin: '20px', marginTop: '20px', height: '100%' }}>
+        <Grid size={9}>
+          <ImageTable entries={entries} onEntryClick={showImage} />
+        </Grid>
+        <Grid size={3}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Button variant="contained" onClick={handleDialogOpen} fullWidth sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}>
+              Add Entry
+            </Button>
+            <Button variant="contained" onClick={handleCountClick} fullWidth color="success" sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}>
+              Count
+            </Button>
+            <TotalTable parkTotals={calculateParkTotals(entries, parks)} />
+          </Box>
+        </Grid>
+      </Grid>
+    </Box>
+
+    {/* Dialog for file upload */}
+    <Dialog open={openUploadDialog} onClose={handleDialogClose} fullWidth>
+        <DialogTitle>Upload Documents</DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+            {currentFiles.length > 0 && (
+              <List sx={{ maxHeight: '20vh', overflowY: 'auto', mb: 2 }}>
+                {currentFiles.map((file, index) => (
+                  <ListItem key={index} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <Typography variant="body2">{file.name}</Typography>
+                    <IconButton size="small" onClick={() => removeFile(file)}>
+                      <CloseIcon fontSize="small" />
+                    </IconButton>
+                  </ListItem>
+                ))}
+              </List>
+            )}
+            <InputFileUpload setCurrentFiles={setCurrentFiles} />
+            <FormControl sx={{ width: '5hw', mt: 2, mb: 2 }}>
+              <InputLabel>Select Park</InputLabel>
+              <Select value={selectedPark} onChange={handleParkChange} label="Select Park">
+                {parks.map((park, index) => (
+                  <MenuItem key={index} value={park}>
+                    {park}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogClose} color="secondary">Cancel</Button>
+          <Button onClick={addEntries} color="primary" disabled={currentFiles.length === 0 || !selectedPark}>
+            Add
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Dialog to show selected image */}
+      <Dialog maxWidth="md" fullWidth open={openImageDialog} onClose={handleImageDialogClose}>
+        <DialogTitle sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+          <IconButton
+            edge="end"
+            color="inherit"
+            onClick={handleImageDialogClose}
+            aria-label="close"
+            sx={{ ml: 2 }}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent>
+          {selectedImageURL && (
+            <img src={selectedImageURL} alt="Selected" style={{ width: '100%', height: 'auto' }} />
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Toastify Container for notifications */}
+      <ToastContainer position="top-right" />
+  </div>
+
+);
 }
