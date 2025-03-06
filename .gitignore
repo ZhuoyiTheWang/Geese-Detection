@@ -12,3 +12,4 @@ runs/
 backend/models
 backend/__pycache__
 backend/geese-detection
+backend/AnalysisOutputs

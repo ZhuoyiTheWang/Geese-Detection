@@ -19,7 +19,7 @@ def download_custom_dataset() -> None:
     # URL of the repository
     repo_url = 'https://github.com/bbillharz/DPR-Goose-Dataset.git'
     # Local directory to clone the repository into
-    local_dir = 'backend/Data/custom/'
+    local_dir = 'Data/custom/'
     # Clone the repository
     Repo.clone_from(repo_url, local_dir)
 
@@ -28,16 +28,16 @@ def download_custom_dataset() -> None:
     print("Splitting images into folders")
 
     # Source directories
-    images_dir = 'backend/Data/custom/processed_images/images'
-    labels_dir = 'backend/Data/custom/processed_images/labels'
+    images_dir = 'Data/custom/processed_images/images'
+    labels_dir = 'Data/custom/processed_images/labels'
 
     # Destination directories
-    train_images_dir = 'backend/datasets/train/images'
-    train_labels_dir = 'backend/datasets/train/labels'
-    valid_images_dir = 'backend/datasets/valid/images'
-    valid_labels_dir = 'backend/datasets/valid/labels'
-    test_images_dir = 'backend/datasets/test/images'
-    test_labels_dir = 'backend/datasets/test/labels'
+    train_images_dir = 'datasets/train/images'
+    train_labels_dir = 'datasets/train/labels'
+    valid_images_dir = 'datasets/valid/images'
+    valid_labels_dir = 'datasets/valid/labels'
+    test_images_dir = 'datasets/test/images'
+    test_labels_dir = 'datasets/test/labels'
 
     # Function to remove and recreate directories
     # We need this to remove any pre-existing files since TVT split is randomized

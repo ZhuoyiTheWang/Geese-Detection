@@ -5,15 +5,18 @@ import glob
 from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
-import pandas
-from collections import Counter
+import os
 
 
-def count_on_labeled_data(model, img_num = None, save = False, show = False): #img_num = number of images to be processed, save = boolean of whether or not files should be saved, show = boolean of whether or not images should be shown
+def count_on_labeled_data(model, img_num = None, save_outputs = False, save_plots = False, show = False): #img_num = number of images to be processed, save = boolean of whether or not files should be saved, show = boolean of whether or not images should be shown
     actual_counts = [] 
     predicted_counts = []
     counts_accuracy = [] #create list accuracy of counts
     file_names = [] #file names
+
+    # create output directory if it doesn't exist
+    if not os.path.exists("AnalysisOutputs"):
+        os.mkdir("AnalysisOutputs")
 
     for i, img_file in enumerate(glob.glob("datasets/test/images/*.jpg")): #for image files in testing folder for model
         if img_num:
@@ -36,22 +39,23 @@ def count_on_labeled_data(model, img_num = None, save = False, show = False): #i
         result = Image.fromarray(result) #plot as image
         if show: #show images if true
             result.show()
-        if save: #save images if true
-            result.save(f'OutputImages/output_{img_file[-8:]}') #save image as output with same numerical value
+        if save_outputs: #save images if true
+            result.save(f'AnalysisOutputs/output_{img_file[-8:]}') #save image as output with same numerical value
 
     x = np.linspace(0, max(max(predicted_counts), max(actual_counts)), 500) #generate line 
     y = x
 
 
     plt.figure()
-    plt.scatter(actual_counts, predicted_counts, s=50, cmap="jet", c=np.abs(np.array(counts_accuracy)))
+    plt.scatter(actual_counts, predicted_counts, s=50, cmap="jet", c=np.abs(np.array(counts_accuracy)), vmin=0, vmax=250)
     plt.plot(x, y, color='midnightblue')
     plt.xlabel('Actual count')
     plt.ylabel('Predicted count')
     plt.title('Confusion Plot')
     cbar = plt.colorbar()
     cbar.set_label("Error Percentage", rotation=270)
-    #plt.savefig('Confusion_plot.png')
+    if save_plots:
+        plt.savefig('AnalysisOutputs/Confusion_plot.png')
     plt.show()
 
     plt.figure()
@@ -86,8 +90,26 @@ def count_on_labeled_data(model, img_num = None, save = False, show = False): #i
     plt.ylabel('Frequency')
     plt.vlines(x=(len(bins)/2), ymin=0, ymax=max(n), colors='red')
     plt.title('Error Frequency')
-    #plt.savefig('Error_histogram.png')
+    if save_plots:
+        plt.savefig('AnalysisOutputs/Error_histogram.png')
     plt.show()
+
+    # TOTAL ACCURACY
+    total_actual = sum(actual_counts)
+    total_predicted = sum(predicted_counts)
+    total_error = total_predicted - total_actual
+    total_accuracy = (float(total_error) * 100) / total_actual
+    if save_outputs:
+        with open('AnalysisOutputs/Accuracy_analysis.txt', 'w') as outfile:
+            outfile.write(f"Actual Total: {total_actual}\n")
+            outfile.write(f"Predicted Total: {total_predicted}\n")
+            outfile.write(f"\nTotal Error: {total_error}\n")
+            outfile.write(f"Total Accuracy: {total_accuracy}%")
+    else:
+        print(f"Actual Total: {total_actual}")
+        print(f"Predicted Total: {total_predicted}")
+        print(f"\nTotal Error: {total_error}")
+        print(f"Total Accuracy: {total_accuracy}%")
 
     return counts_accuracy, file_names, actual_counts, predicted_counts
 
@@ -103,11 +125,11 @@ def counts_on_unlabeled_data(model, img_num, save, show):
         if show:
             result.show()
         if save:
-            result.save(f'OutputImages/output_unlabeled_{img_file[-8:]}') #save image as output with same numerical value
+            result.save(f'AnalysisOutputs/output_unlabeled_{img_file[-8:]}') #save image as output with same numerical value
 
 
 if __name__ == "__main__":
 
-    model = YOLO("Model/custom_150_no_opt_best.pt") #load best weights from training
+    model = YOLO("models/train7/weights/best.pt") #load best weights from training
 
-    counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, save=False, show=False)
+    counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, save_outputs=True, save_plots=True, show=False)

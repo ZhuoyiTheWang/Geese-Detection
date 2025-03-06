@@ -10,7 +10,7 @@ if __name__ == "__main__":
     download_custom_dataset()
 
     # select model
-    model = YOLO("yolo11n.pt") # TODO: try larger models
+    model = YOLO("yolo11n.pt")
 
     # train the model
     model.train(
@@ -20,12 +20,12 @@ if __name__ == "__main__":
         patience = 20,
         imgsz = [1024,1024], #w,h  - the largest we can make it without throwing a dataloader error
         single_cls = True,
-        # multi_scale = True,  # TODO: try this setting
+        multi_scale = True,
         dropout = 0.0, # TODO: try higher
 
         # loss
-        box = 7.5,  # TODO: try smaller
-        cls = 0.5,  # TODO: try larger
+        box = 10,  # TODO: try smaller
+        cls = 0.4,  # TODO: try larger
 
         # data augmentation
         hsv_h = 0.015,
@@ -45,7 +45,7 @@ if __name__ == "__main__":
         # device/speed settings
         device = 0,
         cache = True,
-        batch = 0.7,
+        batch = 0.5,
         workers = 10,
         deterministic = False,
 
