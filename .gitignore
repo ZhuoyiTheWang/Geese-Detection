@@ -13,4 +13,3 @@ backend/__pycache__
 backend/geese-detection
 backend/find_packages
 backend/package_sizes.py
-backend/requirements.txt

@@ -121,54 +121,58 @@ export default function LandingPage() {
   // Handle the Count button click to call the FastAPI backend
   const handleCountClick = async () => {
     const uncountedEntries = entries.filter(entry => entry.count === 'Uncounted');
-
+  
     if (uncountedEntries.length === 0) {
-        toast.error('No uncounted entries to process!');
-        return;
+      toast.error('No uncounted entries to process!');
+      return;
     }
-
-    const base64Images = uncountedEntries.map(entry => entry.fileURL);
-
+  
     const loadingToastId = toast.loading('Counting...');
-    try {
+  
+    // Process entries in batches of 10
+    for (let i = 0; i < uncountedEntries.length; i += 10) {
+      const batch = uncountedEntries.slice(i, i + 10);
+      const base64Images = batch.map(entry => entry.fileURL);
+  
+      try {
         const response = await axios.post('https://goose.backend.minigathering.com/count', {
-            images: base64Images,
+          images: base64Images,
         });
-
+  
         const { counts, output_images } = response.data;
-
-        if (counts && output_images && counts.length === uncountedEntries.length) {
-          const updatedEntries = entries.map(entry => {
-            const index = uncountedEntries.findIndex(uncounted => uncounted.id === entry.id);
-            if (index !== -1) {
+  
+        if (counts && output_images && counts.length === batch.length) {
+          // Update the global entries state with the batch results
+          setEntries(prevEntries =>
+            prevEntries.map(entry => {
+              const index = batch.findIndex(b => b.id === entry.id);
+              if (index !== -1) {
                 return {
-                    ...entry,
-                    count: counts[index],
-                    fileURL: output_images[index],
+                  ...entry,
+                  count: counts[index],
+                  fileURL: output_images[index],
                 };
-            }
-            return entry;
-        });
-
-        setEntries(updatedEntries);
+              }
+              return entry;
+            })
+          );
+        } else {
+          toast.error('Mismatch in counts and output images for a batch');
         }
-
-        toast.update(loadingToastId, {
-            render: 'Count Complete!',
-            type: 'success',
-            isLoading: false,
-            autoClose: 3000,
-        });
-    } catch (error) {
-        console.error('Error calling count endpoint:', error);
-        toast.update(loadingToastId, {
-            render: 'Error occurred while counting',
-            type: 'error',
-            isLoading: false,
-            autoClose: 3000,
-        });
+      } catch (error) {
+        console.error('Error calling count endpoint for a batch:', error);
+        toast.error('Error occurred while counting a batch');
+      }
     }
-};
+  
+    toast.update(loadingToastId, {
+      render: 'Count Complete!',
+      type: 'success',
+      isLoading: false,
+      autoClose: 3000,
+    });
+  };
+  
 
   return (
     <div>
