@@ -3,6 +3,9 @@ import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Typogra
 import Grid from '@mui/material/Grid2';
 import { Close as CloseIcon } from '@mui/icons-material';
 import TitleComponent from './title';
+import MobileTitleComponent from './mobileTitle';
+import MobileImageTable from './mobileImageTable';
+import MobileTotalTable from './mobileTotalTable';
 import ImageTable from './imageTable';
 import TotalTable from './totalTable';
 import InputFileUpload from './fileUpload';
@@ -182,25 +185,35 @@ export default function LandingPage() {
 return isMobile ? (
   <div>
     <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-      <TitleComponent />
-      <Tabs value={selectedTab} onChange={handleTabChange} centered>
+      <MobileTitleComponent />
+      <Tabs value={selectedTab} onChange={handleTabChange} centered sx={{marginBottom: 3}}>
         <Tab label="Images" />
         <Tab label="Results" />
       </Tabs>
       {selectedTab === 0 && (
         <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-          <Button variant="contained" onClick={handleDialogOpen} sx={{ fontSize: '1.5rem', width: '100%' }}>
-            Add Entry
-          </Button>
-          <ImageTable entries={entries} onEntryClick={showImage} sx={{ flex: 1, minHeight: 0 }} />
+          <MobileImageTable entries={entries} onEntryClick={showImage} sx={{ flex: 1, minHeight: 0 }} />
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+            <Button
+              variant="contained"
+              onClick={handleDialogOpen}
+              sx={{
+                fontSize: '1.5rem',
+                width: '90%',
+                height: '50%', // Adjust height for better visibility
+              }}
+            >
+              Add Entry
+            </Button>
+          </Box>
         </Grid>
       )}
       {selectedTab === 1 && (
         <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+          <MobileTotalTable parkTotals={calculateParkTotals(entries, parks)} sx={{ flex: 1, minHeight: 0, width: '100%', overflowX: 'auto' }} />
           <Button variant="contained" color="success" onClick={handleCountClick} sx={{ fontSize: '1.5rem', width: '100%' }}>
             Count
           </Button>
-          <TotalTable parkTotals={calculateParkTotals(entries, parks)} sx={{ flex: 1, minHeight: 0, width: '100%', overflowX: 'auto' }} />
         </Grid>
       )}
     </Box>
