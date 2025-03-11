@@ -193,7 +193,7 @@ return isMobile ? (
       {selectedTab === 0 && (
         <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <MobileImageTable entries={entries} onEntryClick={showImage} sx={{ flex: 1, minHeight: 0 }} />
-          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '14vh'}}>
             <Button
               variant="contained"
               onClick={handleDialogOpen}
@@ -211,9 +211,12 @@ return isMobile ? (
       {selectedTab === 1 && (
         <Grid item xs={12} sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           <MobileTotalTable parkTotals={calculateParkTotals(entries, parks)} sx={{ flex: 1, minHeight: 0, width: '100%', overflowX: 'auto' }} />
-          <Button variant="contained" color="success" onClick={handleCountClick} sx={{ fontSize: '1.5rem', width: '100%' }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', width: '100%', height: '14vh'}}>
+          <Button 
+            variant="contained" color="success" onClick={handleCountClick} sx={{ fontSize: '1.5rem', width: '90%', height: '50%', }}>
             Count
           </Button>
+          </Box>
         </Grid>
       )}
     </Box>
