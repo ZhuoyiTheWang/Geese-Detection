@@ -307,6 +307,7 @@ export default function LandingPage() {
                 alignItems: 'center',
                 width: '100%',
                 height: '14vh',
+                gap: '5px',
               }}
             >
               <Button
@@ -314,11 +315,19 @@ export default function LandingPage() {
                 onClick={handleDialogOpen}
                 sx={{
                   fontSize: '1.5rem',
-                  width: '90%',
+                  width: '48%',
                   height: '50%',
                 }}
               >
                 Add Entry
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleCountClick}
+                sx={{ fontSize: '1.5rem', width: '48%', height: '50%' }}
+              >
+                Count
               </Button>
             </Box>
           </Grid>
@@ -337,22 +346,13 @@ export default function LandingPage() {
                 alignItems: 'center',
                 width: '100%',
                 height: '14vh',
-                gap: '5px',
               }}
             >
               <Button
                 variant="contained"
-                color="success"
-                onClick={handleCountClick}
-                sx={{ fontSize: '1.5rem', width: '48%', height: '50%' }}
-              >
-                Count
-              </Button>
-              <Button
-                variant="contained"
                 color="warning"
                 //onClick={handleDownloadClick}
-                sx={{ fontSize: '1.5rem', width: '48%', height: '50%' }}
+                sx={{ fontSize: '1.5rem', width: '90%', height: '50%' }}
               >
                 Download
               </Button>
