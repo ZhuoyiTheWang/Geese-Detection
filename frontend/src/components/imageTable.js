@@ -1,14 +1,66 @@
+// ImageTable.js
 import { Card, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+
+/**
+ * Returns a stable color string for each groupId in the array.
+ * For example, if you have 5 groups, you'll generate 5 distinct backgrounds.
+ * You can expand or customize the palette as you wish.
+ */
+function generateColorPalette(groupIds) {
+  // Provide as many distinct background colors as you expect groups
+  const colors = [
+    '#fff8c6',
+    '#fde2e2',
+    '#e2f9e1',
+    '#e7e3fc',
+    '#d9eaf7',
+    '#fceade',
+    '#e0e0e0',
+    // ... add more if needed
+  ];
+
+  const map = {};
+  let colorIndex = 0;
+
+  // Assign each groupId a color from the list
+  groupIds.forEach((gId) => {
+    map[gId] = colors[colorIndex % colors.length];
+    colorIndex++;
+  });
+
+  return map;
+}
 
 export default function ImageTable({ entries, onEntryClick }) {
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
 
+  /**
+   * 1. Extract all groupIds (that are truthy) from entries
+   */
+  const groupIds = useMemo(() => {
+    const set = new Set();
+    entries.forEach((entry) => {
+      if (entry.groupId) {
+        set.add(entry.groupId);
+      }
+    });
+    return Array.from(set);
+  }, [entries]);
+
+  /**
+   * 2. Generate a map of groupId -> backgroundColor
+   */
+  const groupColorMap = useMemo(() => {
+    return generateColorPalette(groupIds);
+  }, [groupIds]);
+
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
+  // Slice entries to display only current page
   const rowsToDisplay = entries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   const emptyRows = rowsPerPage - rowsToDisplay.length;
 
@@ -27,29 +79,39 @@ export default function ImageTable({ entries, onEntryClick }) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rowsToDisplay.map((entry, index) => (
-              <TableRow key={index}>
-                {entry.count === 'Uncounted' ? (
-                  <TableCell> {entry.name} </TableCell>
-                ) : (
-                  <TableCell
-                    sx={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
-                    onClick={() => onEntryClick(entry.fileURL)}
-                  >
-                    {entry.name}
+            {rowsToDisplay.map((entry) => {
+              // 3. Lookup the color for this entry's groupId (if any)
+              const rowBackground = entry.groupId ? groupColorMap[entry.groupId] : 'inherit';
+              
+              return (
+                <TableRow
+                  key={entry.id}
+                  sx={{ backgroundColor: rowBackground }}
+                >
+                  {entry.count === 'Uncounted' ? (
+                    <TableCell>{entry.name}</TableCell>
+                  ) : (
+                    <TableCell
+                      sx={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                      onClick={() => onEntryClick(entry.fileURL)}
+                    >
+                      {entry.name}
+                    </TableCell>
+                  )}
+                  <TableCell>{entry.park}</TableCell>
+                  <TableCell>{entry.count ?? 0}</TableCell>
+                </TableRow>
+              );
+            })}
+            {emptyRows > 0 &&
+              Array.from(Array(emptyRows)).map((_, idx) => (
+                <TableRow key={`empty-${idx}`}>
+                  <TableCell colSpan={3} style={{ opacity: 0 }}>
+                    Placeholder
                   </TableCell>
-                )}
-                <TableCell>{entry.park}</TableCell>
-                <TableCell>{entry.count ?? 0}</TableCell>
-              </TableRow>
-            ))}
-            {emptyRows > 0 && Array.from(Array(emptyRows)).map((_, idx) => (
-              <TableRow key={`empty-${idx}`}>
-                <TableCell colSpan={3} style={{ opacity: 0 }}>
-                  Placeholder
-                </TableCell>
-              </TableRow>
-            ))}
+                </TableRow>
+              ))
+            }
           </TableBody>
         </Table>
       </TableContainer>
