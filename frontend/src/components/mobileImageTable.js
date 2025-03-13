@@ -1,11 +1,8 @@
-// ImageTable.js
 import { Card, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination } from '@mui/material';
-import { useMemo, useState } from 'react';
+import { useState, useMemo } from 'react';
 
 /**
  * Returns a stable color string for each groupId in the array.
- * For example, if you have 5 groups, you'll generate 5 distinct backgrounds.
- * You can expand or customize the palette as you wish.
  */
 function generateColorPalette(groupIds) {
   // Provide as many distinct background colors as you expect groups
@@ -32,9 +29,9 @@ function generateColorPalette(groupIds) {
   return map;
 }
 
-export default function ImageTable({ entries, onEntryClick }) {
+export default function MobileImageTable({ entries, onEntryClick }) {
   const [page, setPage] = useState(0);
-  const rowsPerPage = 10;
+  const rowsPerPage = Math.floor(window.innerHeight / 110);
 
   /**
    * 1. Extract all groupIds (that are truthy) from entries
@@ -52,15 +49,12 @@ export default function ImageTable({ entries, onEntryClick }) {
   /**
    * 2. Generate a map of groupId -> backgroundColor
    */
-  const groupColorMap = useMemo(() => {
-    return generateColorPalette(groupIds);
-  }, [groupIds]);
+  const groupColorMap = useMemo(() => generateColorPalette(groupIds), [groupIds]);
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
   };
 
-  // Slice entries to display only current page
   const rowsToDisplay = entries.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage);
   const emptyRows = rowsPerPage - rowsToDisplay.length;
 
@@ -73,32 +67,54 @@ export default function ImageTable({ entries, onEntryClick }) {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell style={{ width: '33%', textAlign: 'left' }}>Image</TableCell>
-              <TableCell style={{ width: '33%', textAlign: 'left' }}>Park</TableCell>
-              <TableCell style={{ width: '33%', textAlign: 'left' }}>Count</TableCell>
+              <TableCell style={{ width: '10%', textAlign: 'left' }}>Image</TableCell>
+              <TableCell style={{ width: '61%', textAlign: 'left' }}>Park</TableCell>
+              <TableCell style={{ width: '29%', textAlign: 'left' }}>Count</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {rowsToDisplay.map((entry) => {
-              // 3. Lookup the color for this entry's groupId (if any)
+            {rowsToDisplay.map((entry, index) => {
+              // 3. Determine background color for this entry’s groupId
               const rowBackground = entry.groupId ? groupColorMap[entry.groupId] : 'inherit';
-              
+
               return (
-                <TableRow
-                  key={entry.id}
-                  sx={{ backgroundColor: rowBackground }}
-                >
+                <TableRow key={index} sx={{ backgroundColor: rowBackground }}>
                   {entry.count === 'Uncounted' ? (
-                    <TableCell>{entry.name}</TableCell>
+                    <TableCell
+                      sx={{
+                        maxWidth: '10px',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis'
+                      }}
+                    >
+                      {entry.name}
+                    </TableCell>
                   ) : (
                     <TableCell
-                      sx={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                      sx={{
+                        maxWidth: '10px',
+                        color: 'blue',
+                        textDecoration: 'underline',
+                        cursor: 'pointer',
+                        overflow: 'hidden',
+                        whiteSpace: 'nowrap',
+                        textOverflow: 'ellipsis'
+                      }}
                       onClick={() => onEntryClick(entry.fileURL)}
                     >
                       {entry.name}
                     </TableCell>
                   )}
-                  <TableCell>{entry.park}</TableCell>
+                  <TableCell
+                    sx={{
+                      overflow: 'hidden',
+                      whiteSpace: 'nowrap',
+                      textOverflow: 'ellipsis'
+                    }}
+                  >
+                    {entry.park}
+                  </TableCell>
                   <TableCell>{entry.count ?? 0}</TableCell>
                 </TableRow>
               );
@@ -110,8 +126,7 @@ export default function ImageTable({ entries, onEntryClick }) {
                     Placeholder
                   </TableCell>
                 </TableRow>
-              ))
-            }
+              ))}
           </TableBody>
         </Table>
       </TableContainer>
