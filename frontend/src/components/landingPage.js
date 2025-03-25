@@ -198,7 +198,7 @@ export default function LandingPage() {
       const base64Images = batch.map((entry) => entry.fileURL);
 
       try {
-        const response = await axios.post('http://127.0.0.1:8000/count', {
+        const response = await axios.post('https://goose.backend.minigathering.com/count', {
           images: base64Images,
         });
         const { counts, output_images } = response.data;
