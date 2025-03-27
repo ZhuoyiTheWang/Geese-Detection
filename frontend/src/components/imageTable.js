@@ -32,7 +32,7 @@ function generateColorPalette(groupIds) {
   return map;
 }
 
-export default function ImageTable({ entries, onEntryClick }) {
+export default function ImageTable({ entries, onEntryClick, onCountEdit }) {
   const [page, setPage] = useState(0);
   const rowsPerPage = 10;
 
@@ -82,12 +82,9 @@ export default function ImageTable({ entries, onEntryClick }) {
             {rowsToDisplay.map((entry) => {
               // 3. Lookup the color for this entry's groupId (if any)
               const rowBackground = entry.groupId ? groupColorMap[entry.groupId] : 'inherit';
-              
+
               return (
-                <TableRow
-                  key={entry.id}
-                  sx={{ backgroundColor: rowBackground }}
-                >
+                <TableRow key={entry.id} sx={{ backgroundColor: rowBackground }}>
                   {entry.count === 'Uncounted' ? (
                     <TableCell>{entry.name}</TableCell>
                   ) : (
@@ -99,7 +96,20 @@ export default function ImageTable({ entries, onEntryClick }) {
                     </TableCell>
                   )}
                   <TableCell>{entry.park}</TableCell>
-                  <TableCell>{entry.count ?? 0}</TableCell>
+                  <TableCell
+                    sx={{
+                      color: entry.count !== 'Uncounted' ? 'blue' : 'inherit',
+                      textDecoration: entry.count !== 'Uncounted' ? 'underline' : 'none',
+                      cursor: entry.count !== 'Uncounted' ? 'pointer' : 'default'
+                    }}
+                    onClick={() => {
+                      if (entry.count !== 'Uncounted' && onCountEdit) {
+                        onCountEdit(entry);
+                      }
+                    }}
+                  >
+                    {entry.count ?? 0}
+                  </TableCell>
                 </TableRow>
               );
             })}
