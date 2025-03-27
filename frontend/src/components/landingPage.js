@@ -346,6 +346,7 @@ export default function LandingPage() {
                 alignItems: 'center',
                 width: '100%',
                 height: '14vh',
+                gap: '5px',
               }}
             >
               <Button
@@ -353,11 +354,19 @@ export default function LandingPage() {
                 onClick={handleDialogOpen}
                 sx={{
                   fontSize: '1.5rem',
-                  width: '90%',
+                  width: '48%',
                   height: '50%',
                 }}
               >
                 Add Entry
+              </Button>
+              <Button
+                variant="contained"
+                color="success"
+                onClick={handleCountClick}
+                sx={{ fontSize: '1.5rem', width: '48%', height: '50%' }}
+              >
+                Count
               </Button>
             </Box>
           </Grid>
@@ -380,11 +389,11 @@ export default function LandingPage() {
             >
               <Button
                 variant="contained"
-                color="success"
-                onClick={handleCountClick}
+                color="warning"
+                //onClick={handleDownloadClick}
                 sx={{ fontSize: '1.5rem', width: '90%', height: '50%' }}
               >
-                Count
+                Download
               </Button>
             </Box>
           </Grid>
@@ -505,7 +514,7 @@ export default function LandingPage() {
     <div>
       <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
         <TitleComponent />
-        <Grid container spacing={2} sx={{ margin: '20px', marginTop: '20px', height: '100%' }}>
+        <Grid container spacing={2} sx={{ margin: '20px', marginTop: '5px', height: '100%' }}>
           <Grid size={9}>
             <ImageTable
               entries={entries}
@@ -520,7 +529,7 @@ export default function LandingPage() {
                 variant="contained"
                 onClick={handleDialogOpen}
                 fullWidth
-                sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}
+                sx={{ height: '8vh', fontSize: '2rem', marginBottom: '15px' }}
               >
                 Add Entry
               </Button>
@@ -529,9 +538,18 @@ export default function LandingPage() {
                 onClick={handleCountClick}
                 fullWidth
                 color="success"
-                sx={{ height: '12vh', fontSize: '2rem', marginBottom: '20px' }}
+                sx={{ height: '8vh', fontSize: '2rem', marginBottom: '15px' }}
               >
                 Count
+              </Button>
+              <Button
+                variant="contained"
+                //onClick={handleDownloadClick}
+                fullWidth
+                color="warning"
+                sx={{ height: '8vh', fontSize: '2rem', marginBottom: '15px' }}
+              >
+                Download
               </Button>
               <TotalTable parkTotals={calculateParkTotals(entries, parks)} />
             </Box>
