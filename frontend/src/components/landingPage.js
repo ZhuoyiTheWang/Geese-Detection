@@ -15,7 +15,8 @@ import {
   InputLabel,
   MenuItem,
   FormControlLabel,
-  Checkbox
+  Checkbox,
+  TextField
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -30,8 +31,6 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
-
-// For responsive checks
 import { useMediaQuery, Tabs, Tab } from '@mui/material';
 
 export default function LandingPage() {
@@ -45,6 +44,11 @@ export default function LandingPage() {
   const [selectedImageURL, setSelectedImageURL] = useState(null);
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [grouped, setGrouped] = useState(false); // For "average these images"
+
+  // New state for editing count
+  const [openEditDialog, setOpenEditDialog] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
+  const [editedCount, setEditedCount] = useState('');
 
   // Mobile tab
   const [selectedTab, setSelectedTab] = useState(0);
@@ -198,7 +202,7 @@ export default function LandingPage() {
       const base64Images = batch.map((entry) => entry.fileURL);
 
       try {
-        const response = await axios.post('https://goose.backend.minigathering.com/count', {
+        const response = await axios.post('http://127.0.0.1:8000/count', {
           images: base64Images,
         });
         const { counts, output_images } = response.data;
@@ -279,6 +283,40 @@ export default function LandingPage() {
   };
 
   // ---------------------------
+  // Handle count editing
+  // ---------------------------
+  const handleEditCount = (entry) => {
+    setEditingEntry(entry);
+    setEditedCount(entry.count);
+    setOpenEditDialog(true);
+  };
+
+  const handleEditSave = () => {
+    const newCount = editedCount.toString();
+    // If entry is grouped, update all in the same group; else just update that entry.
+    setEntries((prevEntries) =>
+      prevEntries.map((entry) => {
+        if (editingEntry.groupId && entry.groupId === editingEntry.groupId) {
+          return { ...entry, count: newCount };
+        }
+        if (!editingEntry.groupId && entry.id === editingEntry.id) {
+          return { ...entry, count: newCount };
+        }
+        return entry;
+      })
+    );
+    setOpenEditDialog(false);
+    setEditingEntry(null);
+    setEditedCount('');
+  };
+
+  const handleEditCancel = () => {
+    setOpenEditDialog(false);
+    setEditingEntry(null);
+    setEditedCount('');
+  };
+
+  // ---------------------------
   // Rendering
   // ---------------------------
   return isMobile ? (
@@ -298,6 +336,7 @@ export default function LandingPage() {
             <MobileImageTable
               entries={entries}
               onEntryClick={showImage}
+              onCountEdit={handleEditCount}  // New prop for count editing
               sx={{ flex: 1, minHeight: 0 }}
             />
             <Box
@@ -436,6 +475,27 @@ export default function LandingPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Dialog to edit count */}
+      <Dialog open={openEditDialog} onClose={handleEditCancel}>
+        <DialogTitle>Edit Count</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Count"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={editedCount}
+            onChange={(e) => setEditedCount(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditCancel} color="secondary">Cancel</Button>
+          <Button onClick={handleEditSave} color="primary">Save</Button>
+        </DialogActions>
+      </Dialog>
+
       <ToastContainer position="top-right" />
     </div>
   ) : (
@@ -447,7 +507,11 @@ export default function LandingPage() {
         <TitleComponent />
         <Grid container spacing={2} sx={{ margin: '20px', marginTop: '20px', height: '100%' }}>
           <Grid size={9}>
-            <ImageTable entries={entries} onEntryClick={showImage} />
+            <ImageTable
+              entries={entries}
+              onEntryClick={showImage}
+              onCountEdit={handleEditCount} // New prop for count editing
+            />
           </Grid>
 
           <Grid size={3}>
@@ -557,6 +621,27 @@ export default function LandingPage() {
             />
           )}
         </DialogContent>
+      </Dialog>
+
+      {/* Dialog to edit count */}
+      <Dialog open={openEditDialog} onClose={handleEditCancel}>
+        <DialogTitle>Edit Count</DialogTitle>
+        <DialogContent>
+          <TextField
+            autoFocus
+            margin="dense"
+            label="Count"
+            type="number"
+            fullWidth
+            variant="outlined"
+            value={editedCount}
+            onChange={(e) => setEditedCount(e.target.value)}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleEditCancel} color="secondary">Cancel</Button>
+          <Button onClick={handleEditSave} color="primary">Save</Button>
+        </DialogActions>
       </Dialog>
 
       <ToastContainer position="top-right" />
