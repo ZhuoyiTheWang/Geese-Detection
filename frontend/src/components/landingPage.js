@@ -178,7 +178,7 @@ export default function LandingPage() {
         const reader = new FileReader();
         reader.onload = (e) => {
           const fileURL = e.target.result;
-          // Track the time when the image is uploaded
+          // Track the time when the image is uploaded using the device's locale format
           const uploadedTime = new Date().toLocaleString(undefined, options);
           const entry = {
             id: uuidv4(),
@@ -352,6 +352,13 @@ export default function LandingPage() {
   };
 
   const handleDownloadSubmit = async () => {
+    // Check if there are entries to download
+    if (entries.length === 0) {
+      toast.error('No entries to download!');
+      setOpenDownloadDialog(false);
+      return;
+    }
+  
     // Only proceed if either option is selected.
     if (downloadCounts || downloadImages) {
       const zip = new JSZip();
