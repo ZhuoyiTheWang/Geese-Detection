@@ -447,25 +447,6 @@ export default function LandingPage() {
                 Count
               </Button>
             </Box>
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '100%',
-                height: '8vh',
-                mt: 1
-              }}
-            >
-              <Button
-                variant="contained"
-                color="warning"
-                onClick={openDownload}
-                sx={{ fontSize: '1.5rem', width: '90%', height: '100%' }}
-              >
-                Download
-              </Button>
-            </Box>
           </Grid>
         )}
 
@@ -475,6 +456,24 @@ export default function LandingPage() {
               parkTotals={calculateParkTotals(entries, parks)}
               sx={{ flex: 1, minHeight: 0, width: '100%', overflowX: 'auto' }}
             />
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '14vh',
+              }}
+            >
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={openDownload}
+                sx={{ fontSize: '1.5rem', width: '90%', height: '50%' }}
+              >
+                Download
+              </Button>
+            </Box>
           </Grid>
         )}
       </Box>
