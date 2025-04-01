@@ -16,7 +16,10 @@ import {
   MenuItem,
   FormControlLabel,
   Checkbox,
-  TextField
+  TextField,
+  Tabs,
+  Tab,
+  useMediaQuery
 } from '@mui/material';
 import Grid from '@mui/material/Grid2';
 import { Close as CloseIcon } from '@mui/icons-material';
@@ -31,7 +34,8 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { v4 as uuidv4 } from 'uuid';
-import { useMediaQuery, Tabs, Tab } from '@mui/material';
+import JSZip from 'jszip';
+import { saveAs } from 'file-saver';
 
 export default function LandingPage() {
   // ---------------------------
@@ -45,10 +49,15 @@ export default function LandingPage() {
   const [openImageDialog, setOpenImageDialog] = useState(false);
   const [grouped, setGrouped] = useState(false); // For "average these images"
 
-  // New state for editing count
+  // New state for editing count (dialog-based, used on desktop and mobile)
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
   const [editedCount, setEditedCount] = useState('');
+
+  // New state for download dialog and options
+  const [openDownloadDialog, setOpenDownloadDialog] = useState(false);
+  const [downloadCounts, setDownloadCounts] = useState(false);
+  const [downloadImages, setDownloadImages] = useState(false);
 
   // Mobile tab
   const [selectedTab, setSelectedTab] = useState(0);
@@ -67,7 +76,7 @@ export default function LandingPage() {
   ];
 
   // ---------------------------
-  // Dialog open/close
+  // Dialog open/close for file upload
   // ---------------------------
   const handleDialogOpen = () => {
     setOpenUploadDialog(true);
@@ -283,7 +292,7 @@ export default function LandingPage() {
   };
 
   // ---------------------------
-  // Handle count editing
+  // Handle count editing (opens dialog)
   // ---------------------------
   const handleEditCount = (entry) => {
     setEditingEntry(entry);
@@ -317,6 +326,75 @@ export default function LandingPage() {
   };
 
   // ---------------------------
+  // Handle download dialog open/close and submission
+  // ---------------------------
+  const openDownload = () => {
+    // Reset options when opening dialog
+    setDownloadCounts(false);
+    setDownloadImages(false);
+    setOpenDownloadDialog(true);
+  };
+
+  const closeDownload = () => {
+    setOpenDownloadDialog(false);
+  };
+
+  const handleDownloadSubmit = async () => {
+    // Only proceed if either option is selected.
+    if (downloadCounts || downloadImages) {
+      const zip = new JSZip();
+  
+      // If downloadCounts is selected, add two CSV files:
+      if (downloadCounts) {
+        // Create CSV for park totals.
+        const totalsCsvRows = [];
+        totalsCsvRows.push("Park,Count");
+        const totals = calculateParkTotals(entries, parks);
+        Object.keys(totals).forEach((park) => {
+          totalsCsvRows.push(`${park},${totals[park]}`);
+        });
+        const totalsCsvContent = totalsCsvRows.join("\n");
+        zip.file('park_totals.csv', totalsCsvContent);
+  
+        // Create CSV for image details (name, count, group)
+        const imageCsvRows = [];
+        imageCsvRows.push("Image Name,Count,Group");
+        entries.forEach((entry) => {
+          // If entry.groupId is null/undefined, we leave it blank.
+          imageCsvRows.push(`${entry.name},${entry.count},${entry.groupId ? entry.groupId : ''}`);
+        });
+        const imageCsvContent = imageCsvRows.join("\n");
+        zip.file('image_details.csv', imageCsvContent);
+      }
+  
+      // If downloadImages is selected, add annotated images to the zip.
+      if (downloadImages) {
+        const folder = zip.folder("annotated_images");
+        // Only include entries that have been counted and have a valid fileURL.
+        const imageEntries = entries.filter(e => e.count !== 'Uncounted' && e.fileURL);
+        const promises = imageEntries.map(async (entry) => {
+          try {
+            const response = await fetch(entry.fileURL);
+            const blob = await response.blob();
+            // Use the original file name as the name in the zip.
+            folder.file(entry.name, blob);
+          } catch (err) {
+            console.error(`Failed to add image ${entry.name}:`, err);
+          }
+        });
+        await Promise.all(promises);
+      }
+  
+      // Generate the zip and trigger a download.
+      const zipBlob = await zip.generateAsync({ type: "blob" });
+      saveAs(zipBlob, "download.zip");
+    }
+  
+    // Close the download dialog.
+    setOpenDownloadDialog(false);
+  };
+
+  // ---------------------------
   // Rendering
   // ---------------------------
   return isMobile ? (
@@ -336,7 +414,7 @@ export default function LandingPage() {
             <MobileImageTable
               entries={entries}
               onEntryClick={showImage}
-              onCountEdit={handleEditCount}  // New prop for count editing
+              onCountEdit={handleEditCount}  // Opens dialog for count editing
               sx={{ flex: 1, minHeight: 0 }}
             />
             <Box
@@ -346,7 +424,7 @@ export default function LandingPage() {
                 alignItems: 'center',
                 width: '100%',
                 height: '14vh',
-                gap: '5px',
+                gap: '5px'
               }}
             >
               <Button
@@ -369,6 +447,25 @@ export default function LandingPage() {
                 Count
               </Button>
             </Box>
+            <Box
+              sx={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                width: '100%',
+                height: '8vh',
+                mt: 1
+              }}
+            >
+              <Button
+                variant="contained"
+                color="warning"
+                onClick={openDownload}
+                sx={{ fontSize: '1.5rem', width: '90%', height: '100%' }}
+              >
+                Download
+              </Button>
+            </Box>
           </Grid>
         )}
 
@@ -378,24 +475,6 @@ export default function LandingPage() {
               parkTotals={calculateParkTotals(entries, parks)}
               sx={{ flex: 1, minHeight: 0, width: '100%', overflowX: 'auto' }}
             />
-            <Box
-              sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                width: '100%',
-                height: '14vh',
-              }}
-            >
-              <Button
-                variant="contained"
-                color="warning"
-                //onClick={handleDownloadClick}
-                sx={{ fontSize: '1.5rem', width: '90%', height: '50%' }}
-              >
-                Download
-              </Button>
-            </Box>
           </Grid>
         )}
       </Box>
@@ -505,6 +584,39 @@ export default function LandingPage() {
         </DialogActions>
       </Dialog>
 
+      {/* Download Dialog */}
+      <Dialog open={openDownloadDialog} onClose={closeDownload} fullWidth>
+        <DialogTitle>Download Options</DialogTitle>
+        <DialogContent>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={downloadCounts}
+                onChange={(e) => setDownloadCounts(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Download Counts (CSV)"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={downloadImages}
+                onChange={(e) => setDownloadImages(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Download Annotated Images (ZIP)"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDownload} color="secondary">Cancel</Button>
+          <Button onClick={handleDownloadSubmit} color="primary" disabled={!downloadCounts && !downloadImages}>
+            Download
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <ToastContainer position="top-right" />
     </div>
   ) : (
@@ -519,7 +631,7 @@ export default function LandingPage() {
             <ImageTable
               entries={entries}
               onEntryClick={showImage}
-              onCountEdit={handleEditCount} // New prop for count editing
+              onCountEdit={handleEditCount} // Opens dialog for count editing
             />
           </Grid>
 
@@ -544,7 +656,7 @@ export default function LandingPage() {
               </Button>
               <Button
                 variant="contained"
-                //onClick={handleDownloadClick}
+                onClick={() => setOpenDownloadDialog(true)}
                 fullWidth
                 color="warning"
                 sx={{ height: '8vh', fontSize: '2rem', marginBottom: '15px' }}
@@ -659,6 +771,39 @@ export default function LandingPage() {
         <DialogActions>
           <Button onClick={handleEditCancel} color="secondary">Cancel</Button>
           <Button onClick={handleEditSave} color="primary">Save</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Download Dialog */}
+      <Dialog open={openDownloadDialog} onClose={() => setOpenDownloadDialog(false)} fullWidth>
+        <DialogTitle>Download Options</DialogTitle>
+        <DialogContent>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={downloadCounts}
+                onChange={(e) => setDownloadCounts(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Download Counts (CSV)"
+          />
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={downloadImages}
+                onChange={(e) => setDownloadImages(e.target.checked)}
+                color="primary"
+              />
+            }
+            label="Download Annotated Images (ZIP)"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDownloadDialog(false)} color="secondary">Cancel</Button>
+          <Button onClick={handleDownloadSubmit} color="primary" disabled={!downloadCounts && !downloadImages}>
+            Download
+          </Button>
         </DialogActions>
       </Dialog>
 
