@@ -211,7 +211,7 @@ export default function LandingPage() {
       const base64Images = batch.map((entry) => entry.fileURL);
 
       try {
-        const response = await axios.post('http://127.0.0.1:8000/count', {
+        const response = await axios.post('https://goose.backend.minigathering.com/count', {
           images: base64Images,
         });
         const { counts, output_images } = response.data;
@@ -340,38 +340,57 @@ export default function LandingPage() {
   };
 
   const handleDownloadSubmit = async () => {
-    // If counts option selected, generate and download CSV
-    if (downloadCounts) {
-      const csvRows = [];
-      csvRows.push("Park,Count");
-      const totals = calculateParkTotals(entries, parks);
-      Object.keys(totals).forEach((park) => {
-        csvRows.push(`${park},${totals[park]}`);
-      });
-      const csvContent = csvRows.join("\n");
-      const csvBlob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      saveAs(csvBlob, 'park_totals.csv');
-    }
-
-    // If images option selected, generate a zip of annotated images
-    if (downloadImages) {
+    // Only proceed if either option is selected.
+    if (downloadCounts || downloadImages) {
       const zip = new JSZip();
-      const folder = zip.folder("annotated_images");
-      // For simplicity, assume all entries with a non-Uncounted count have an annotated image.
-      const imageEntries = entries.filter(e => e.count !== 'Uncounted' && e.fileURL);
-      const promises = imageEntries.map(async (entry) => {
-        // Fetch the image from the data URL and add to the zip
-        const response = await fetch(entry.fileURL);
-        const blob = await response.blob();
-        // Use the file name (or generate one) for each image
-        folder.file(entry.name, blob);
-      });
-      await Promise.all(promises);
+  
+      // If downloadCounts is selected, add two CSV files:
+      if (downloadCounts) {
+        // Create CSV for park totals.
+        const totalsCsvRows = [];
+        totalsCsvRows.push("Park,Count");
+        const totals = calculateParkTotals(entries, parks);
+        Object.keys(totals).forEach((park) => {
+          totalsCsvRows.push(`${park},${totals[park]}`);
+        });
+        const totalsCsvContent = totalsCsvRows.join("\n");
+        zip.file('park_totals.csv', totalsCsvContent);
+  
+        // Create CSV for image details (name, count, group)
+        const imageCsvRows = [];
+        imageCsvRows.push("Image Name,Count,Group");
+        entries.forEach((entry) => {
+          // If entry.groupId is null/undefined, we leave it blank.
+          imageCsvRows.push(`${entry.name},${entry.count},${entry.groupId ? entry.groupId : ''}`);
+        });
+        const imageCsvContent = imageCsvRows.join("\n");
+        zip.file('image_details.csv', imageCsvContent);
+      }
+  
+      // If downloadImages is selected, add annotated images to the zip.
+      if (downloadImages) {
+        const folder = zip.folder("annotated_images");
+        // Only include entries that have been counted and have a valid fileURL.
+        const imageEntries = entries.filter(e => e.count !== 'Uncounted' && e.fileURL);
+        const promises = imageEntries.map(async (entry) => {
+          try {
+            const response = await fetch(entry.fileURL);
+            const blob = await response.blob();
+            // Use the original file name as the name in the zip.
+            folder.file(entry.name, blob);
+          } catch (err) {
+            console.error(`Failed to add image ${entry.name}:`, err);
+          }
+        });
+        await Promise.all(promises);
+      }
+  
+      // Generate the zip and trigger a download.
       const zipBlob = await zip.generateAsync({ type: "blob" });
-      saveAs(zipBlob, "annotated_images.zip");
+      saveAs(zipBlob, "download.zip");
     }
-
-    // Close the download dialog after submission.
+  
+    // Close the download dialog.
     setOpenDownloadDialog(false);
   };
 
