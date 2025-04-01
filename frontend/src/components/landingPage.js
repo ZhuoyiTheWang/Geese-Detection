@@ -75,6 +75,15 @@ export default function LandingPage() {
     'Ruby Hill', 'Sloan', 'Vanderbilt', 'Washington'
   ];
 
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+  };
+
   // ---------------------------
   // Dialog open/close for file upload
   // ---------------------------
@@ -169,13 +178,16 @@ export default function LandingPage() {
         const reader = new FileReader();
         reader.onload = (e) => {
           const fileURL = e.target.result;
+          // Track the time when the image is uploaded using the device's locale format
+          const uploadedTime = new Date().toLocaleString(undefined, options);
           const entry = {
             id: uuidv4(),
             name: file.name,
             fileURL,
             count: 'Uncounted',
             park: selectedPark,
-            groupId: newGroupId
+            groupId: newGroupId,
+            uploadedTime, // New property added for tracking upload time
           };
           newEntries.push(entry);
 
@@ -340,6 +352,13 @@ export default function LandingPage() {
   };
 
   const handleDownloadSubmit = async () => {
+    // Check if there are entries to download
+    if (entries.length === 0) {
+      toast.error('No entries to download!');
+      setOpenDownloadDialog(false);
+      return;
+    }
+  
     // Only proceed if either option is selected.
     if (downloadCounts || downloadImages) {
       const zip = new JSZip();
@@ -356,12 +375,12 @@ export default function LandingPage() {
         const totalsCsvContent = totalsCsvRows.join("\n");
         zip.file('park_totals.csv', totalsCsvContent);
   
-        // Create CSV for image details (name, count, group)
+        // Create CSV for image details (name, count, group, upload time)
         const imageCsvRows = [];
-        imageCsvRows.push("Image Name,Count,Group");
+        imageCsvRows.push("Image Name,Count,Group,Uploaded Time");
         entries.forEach((entry) => {
           // If entry.groupId is null/undefined, we leave it blank.
-          imageCsvRows.push(`${entry.name},${entry.count},${entry.groupId ? entry.groupId : ''}`);
+          imageCsvRows.push(`"${entry.name}",${entry.count},"${entry.groupId ? entry.groupId : ''}","${entry.uploadedTime ? entry.uploadedTime : ''}"`);
         });
         const imageCsvContent = imageCsvRows.join("\n");
         zip.file('image_details.csv', imageCsvContent);
