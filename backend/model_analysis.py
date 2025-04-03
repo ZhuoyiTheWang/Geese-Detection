@@ -57,7 +57,8 @@ def count_on_labeled_data(model, img_num = None, save_outputs = False, save_plot
     plt.ylabel('Predicted count')
     plt.title('Confusion Plot')
     cbar = plt.colorbar()
-    cbar.set_label("Error Percentage", rotation=270)
+    cbar.set_label("Error Percentage", rotation=270, labelpad=15)
+    plt.tight_layout()
     if save_plots:
         plt.savefig('AnalysisOutputs/Confusion_plot.png')
     plt.show()
