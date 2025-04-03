@@ -7,7 +7,7 @@ from goose_finder import count_geese
 from ultralytics import YOLO
 
 app = FastAPI()
-model = YOLO("./Model/custom_150_no_opt_best.pt") #load best weights from training
+model = YOLO("./Model/custom11s.pt") #load best weights from training
 
 # Add CORS middleware to allow requests from the React frontend
 app.add_middleware(
