@@ -2,6 +2,7 @@
 
 from ultralytics import YOLO
 from data_download import download_custom_dataset
+import time
 
 
 if __name__ == "__main__":
@@ -9,46 +10,52 @@ if __name__ == "__main__":
     # download and randomize tvt split each run
     download_custom_dataset()
 
-    # select model
-    model = YOLO("yolo11n.pt")
+    for model_name in ["yolo11n.pt", "yolo11s.pt", "yolo11m.pt"]:
 
-    # train the model
-    model.train(
-        # training
-        data = "goose.yaml", # yaml file for model configuration
-        epochs = 50, # number of training periods
-        patience = 20,
-        imgsz = [1024,1024], #w,h  - the largest we can make it without throwing a dataloader error
-        single_cls = True,
-        multi_scale = True,
-        dropout = 0.0, # TODO: try higher
+        # select model
+        model = YOLO(model_name)
 
-        # loss
-        box = 10,  # TODO: try smaller
-        cls = 0.4,  # TODO: try larger
+        # train the model
+        model.train(
+            # training
+            data = "goose.yaml", # yaml file for model configuration
+            epochs = 1000, # number of training periods
+            patience = 100,
+            imgsz = [1024,1024], #w,h  - the largest we can make it without throwing a dataloader error
+            single_cls = True,
+            multi_scale = True,
+            dropout = 0.3,
 
-        # data augmentation
-        hsv_h = 0.015,
-        hsv_s = 0.7,
-        degrees = 0.0,
-        translate = 0.1,
-        scale = 0.5,
-        shear = 0.0,
-        perspective = 0.0,
-        flipud = 0.0,
-        fliplr = 0.5,
-        mixup = 0.0,
-        copy_paste = 0.0,
-        erasing = 0.4,
-        crop_fraction = 1.0,
+            # loss
+            box = 7,
+            cls = 5,
 
-        # device/speed settings
-        device = 0,
-        cache = True,
-        batch = 0.5,
-        workers = 10,
-        deterministic = False,
+            # data augmentation
+            hsv_h = 0.015,
+            hsv_s = 0.7,
+            degrees = 0.0,
+            translate = 0.1,
+            scale = 0.5,
+            shear = 0.0,
+            perspective = 0.0,
+            flipud = 0.0,
+            fliplr = 0.5,
+            mixup = 0.0,
+            copy_paste = 0.0,
+            erasing = 0.4,
+            crop_fraction = 1.0,
 
-        # output
-        project = "models/"
-    )
+            # device/speed settings
+            device = 0,
+            cache = True,
+            batch = 0.6,
+            workers = 8,
+            deterministic = False,
+
+            # confidence threshold
+            # conf = 0.35,
+
+            # output
+            project = "models/new",
+            name = model_name[:-3]
+        )

@@ -6,6 +6,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 import os
+import shutil
 
 
 def count_on_labeled_data(model, img_num = None, save_outputs = False, save_plots = False, show = False): #img_num = number of images to be processed, save = boolean of whether or not files should be saved, show = boolean of whether or not images should be shown
@@ -14,9 +15,12 @@ def count_on_labeled_data(model, img_num = None, save_outputs = False, save_plot
     counts_accuracy = [] #create list accuracy of counts
     file_names = [] #file names
 
-    # create output directory if it doesn't exist
-    if not os.path.exists("AnalysisOutputs"):
-        os.mkdir("AnalysisOutputs")
+    # clear output directory if it already exists
+    if os.path.exists("AnalysisOutputs"):
+        shutil.rmtree("AnalysisOutputs")
+
+    # create output directory
+    os.mkdir("AnalysisOutputs")
 
     for i, img_file in enumerate(glob.glob("datasets/test/images/*.jpg")): #for image files in testing folder for model
         if img_num:
@@ -114,22 +118,31 @@ def count_on_labeled_data(model, img_num = None, save_outputs = False, save_plot
     return counts_accuracy, file_names, actual_counts, predicted_counts
 
 
-def counts_on_unlabeled_data(model, img_num, save, show):
+def counts_on_unlabeled_data(model, save, show):
+    total_geese = 0
+
     for i, img_file in enumerate(glob.glob("Data/test_images/*.jpg")): #for image files in testing folder
-        if i >= img_num: #to start, only run with given number of test cases
-            break #end for loop
+        
         result = model.predict(img_file)[0] #predict using the image
+        predicted_count = (len(result.boxes))
         result = result.plot(line_width=1) #plot results with line width of 1
         result = result[:, :, ::-1] #switch from BGR to RGB
         result = Image.fromarray(result) #plot as image
         if show:
             result.show()
         if save:
+
             result.save(f'AnalysisOutputs/output_unlabeled_{img_file[-8:]}') #save image as output with same numerical value
+
+        total_geese += predicted_count
+        print(f"Found {predicted_count} geese")
+
+    print(f"\nTotal geese found: {total_geese}")
 
 
 if __name__ == "__main__":
 
-    model = YOLO("models/train7/weights/best.pt") #load best weights from training
+    model = YOLO("Model/custom11n.pt") #load best weights from training
 
     counts_accuracy, file_names, actual_counts, predicted_counts = count_on_labeled_data(model, save_outputs=True, save_plots=True, show=False)
+    # counts_on_unlabeled_data(model, show=True, save=False)
