@@ -5,6 +5,7 @@ import base64
 import os
 from goose_finder import count_geese
 from ultralytics import YOLO
+import torch
 
 app = FastAPI()
 model = YOLO("./Model/custom11n.pt") #load best weights from training
@@ -33,7 +34,8 @@ def count_entries(data: ImageList):
     try:
         #Call goose counting function on list of images
         #Returns list of counts and generates output images locally
-        counts, output_images = count_geese(model, data.images)
+        with torch.no_grad():
+            counts, output_images = count_geese(model, data.images)
         return {"counts": counts, "output_images": output_images}
 
     except Exception as e:

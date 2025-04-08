@@ -2,7 +2,7 @@
 # Use to count the number of geese using the model
 
 # import glob
-from PIL import Image
+from PIL import Image, ImageOps
 import base64
 import numpy as np
 from io import BytesIO
@@ -13,6 +13,7 @@ def base64_to_pillow(base64_string):
 
     image_data = base64.b64decode(base64_string)
     image = Image.open(BytesIO(image_data))
+    image = ImageOps.exif_transpose(image)
     
     return image
 
