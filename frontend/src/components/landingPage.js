@@ -223,7 +223,7 @@ export default function LandingPage() {
       const base64Images = batch.map((entry) => entry.fileURL);
 
       try {
-        const response = await axios.post('https://backend.dprgoosecounter/count', {
+        const response = await axios.post('https://backend.dprgoosecounter.com/count', {
           images: base64Images,
         });
         const { counts, output_images } = response.data;

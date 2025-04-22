@@ -13,7 +13,7 @@ model = YOLO("./Model/custom11n.pt") #load best weights from training
 # Add CORS middleware to allow requests from the React frontend
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://goose.minigathering.com", "http://localhost:3000", "https://dprgoosecounter.com/"],  # Allow only your React app to access the API
+    allow_origins=["https://goose.minigathering.com", "https://dprgoosecounter.com/"],  # Allow only your React app to access the API
     allow_credentials=True,
     allow_methods=["*"],  # Allow all HTTP methods (GET, POST, etc.)
     allow_headers=["*"],  # Allow all headers
